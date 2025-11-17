@@ -2,18 +2,12 @@ import React, { useState } from 'react';
 import { CompanyData } from '../types';
 import { useCalculations } from '../hooks/useCalculations';
 import BuiltInReport from './BuiltInReport';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 // Helper to format currency
 const formatCurrency = (value: number) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-// Since we are using CDNs, we need to declare these global variables for TypeScript
-declare const XLSX: any;
-
-declare global {
-  interface Window {
-    jspdf: any;
-  }
-}
 
 type ReportView = 'monthly' | 'yearly' | 'total';
 
@@ -97,7 +91,6 @@ const ReportsGenerator: React.FC<{ companyData: CompanyData }> = ({ companyData 
     };
 
     const generatePdf = () => {
-        const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
         doc.text(`Relatório de Créditos - ${companyData.company.name}`, 14, 20);
@@ -107,7 +100,7 @@ const ReportsGenerator: React.FC<{ companyData: CompanyData }> = ({ companyData 
         
         doc.text(`Crédito Total Apurado: ${formatCurrency(totalCredit)}`, 14, 30);
         
-        doc.autoTable({
+        autoTable(doc, {
             startY: 40,
             head: [['Mês', 'Receita Total', 'Receita Monofásica', 'Crédito Apurado']],
             body: calculations.map(c => [
