@@ -31,12 +31,12 @@ export const simplesNacionalTables: Record<AnexoName, Anexo> = {
     anexo2: { // Indústria
         nome: "Anexo II - Indústria",
         faixas: [
-            { de: 0, ate: 180000, aliquota: 0.045, valorADeduzir: 0, partilha: { 'IRPJ': 0.055, 'CSLL': 0.035, 'COFINS': 0.1274, 'PIS/Pasep': 0.0276, 'CPP': 0.375, 'IPI': 0.075, 'ICMS': 0.3 } },
-            { de: 180000.01, ate: 360000, aliquota: 0.078, valorADeduzir: 5940, partilha: { 'IRPJ': 0.055, 'CSLL': 0.035, 'COFINS': 0.1274, 'PIS/Pasep': 0.0276, 'CPP': 0.375, 'IPI': 0.075, 'ICMS': 0.3 } },
-            { de: 360000.01, ate: 720000, aliquota: 0.1, valorADeduzir: 13860, partilha: { 'IRPJ': 0.055, 'CSLL': 0.035, 'COFINS': 0.1274, 'PIS/Pasep': 0.0276, 'CPP': 0.375, 'IPI': 0.075, 'ICMS': 0.3 } },
-            { de: 720000.01, ate: 1800000, aliquota: 0.112, valorADeduzir: 22500, partilha: { 'IRPJ': 0.055, 'CSLL': 0.035, 'COFINS': 0.1274, 'PIS/Pasep': 0.0276, 'CPP': 0.375, 'IPI': 0.075, 'ICMS': 0.3 } },
-            { de: 1800000.01, ate: 3600000, aliquota: 0.147, valorADeduzir: 85500, partilha: { 'IRPJ': 0.055, 'CSLL': 0.035, 'COFINS': 0.1274, 'PIS/Pasep': 0.0276, 'CPP': 0.375, 'IPI': 0.075, 'ICMS': 0.3 } },
-            { de: 3600000.01, ate: 4800000, aliquota: 0.3, valorADeduzir: 720000, partilha: { 'IRPJ': 0.055, 'CSLL': 0.035, 'COFINS': 0.1274, 'PIS/Pasep': 0.0276, 'CPP': 0.375, 'IPI': 0.075, 'ICMS': 0.3 } },
+            { de: 0, ate: 180000, aliquota: 0.045, valorADeduzir: 0, partilha: { 'IRPJ': 0.055, 'CSLL': 0.035, 'COFINS': 0.1274, 'PIS/Pasep': 0.0276, 'CPP': 0.415, 'IPI': 0.075, 'ICMS': 0.265 } },
+            { de: 180000.01, ate: 360000, aliquota: 0.078, valorADeduzir: 5940, partilha: { 'IRPJ': 0.055, 'CSLL': 0.035, 'COFINS': 0.1274, 'PIS/Pasep': 0.0276, 'CPP': 0.415, 'IPI': 0.075, 'ICMS': 0.265 } },
+            { de: 360000.01, ate: 720000, aliquota: 0.1, valorADeduzir: 13860, partilha: { 'IRPJ': 0.055, 'CSLL': 0.035, 'COFINS': 0.1274, 'PIS/Pasep': 0.0276, 'CPP': 0.415, 'IPI': 0.075, 'ICMS': 0.265 } },
+            { de: 720000.01, ate: 1800000, aliquota: 0.112, valorADeduzir: 22500, partilha: { 'IRPJ': 0.055, 'CSLL': 0.035, 'COFINS': 0.1274, 'PIS/Pasep': 0.0276, 'CPP': 0.415, 'IPI': 0.075, 'ICMS': 0.265 } },
+            { de: 1800000.01, ate: 3600000, aliquota: 0.147, valorADeduzir: 85500, partilha: { 'IRPJ': 0.055, 'CSLL': 0.035, 'COFINS': 0.1274, 'PIS/Pasep': 0.0276, 'CPP': 0.415, 'IPI': 0.075, 'ICMS': 0.265 } },
+            { de: 3600000.01, ate: 4800000, aliquota: 0.3, valorADeduzir: 720000, partilha: { 'IRPJ': 0.055, 'CSLL': 0.035, 'COFINS': 0.1274, 'PIS/Pasep': 0.0276, 'CPP': 0.415, 'IPI': 0.075, 'ICMS': 0.265 } },
         ]
     },
     anexo3: { // Serviços e Locação de Bens Móveis

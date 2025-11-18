@@ -6,7 +6,7 @@ import ReportsGenerator from './components/ReportsGenerator';
 import CompanyManager from './components/CompanyManager';
 import CalculationsInput from './components/CalculationsInput';
 import { parseNFeXML } from './utils/xmlParser';
-import { Company, CompanyData, Invoice, InvoiceItem, UploadFile, UploadStatus } from './types';
+import { Company, CompanyData, Invoice, InvoiceItem, UploadFile, UploadStatus, CalculationInput } from './types';
 import { MONOFASICO_NCM_TABLE } from './data/mockData';
 import { saveData, loadData } from './services/storage';
 
@@ -160,7 +160,10 @@ const App: React.FC = () => {
     }));
   };
   
-  const handleCalculationsSave = (inputs: Record<string, { das_paid?: number; effective_aliquot?: number }>) => {
+  // FIX: Correct the type of `inputs` to `Record<string, CalculationInput>`.
+  // A previous incorrect or weaker type (e.g., `any`) was causing type pollution in
+  // the `companiesData` state, leading to a type error when accessing `cd.company`.
+  const handleCalculationsSave = (inputs: Record<string, CalculationInput>) => {
     if (!activeCompanyId) return;
     setCompaniesData(prev => ({
         ...prev,

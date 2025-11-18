@@ -40,7 +40,7 @@ export function useCalculations(invoices: Invoice[], calculationInputs: Record<s
         const anexo = userInput?.anexo;
         const rbt12 = userInput?.rbt12 ?? 0;
 
-        if (!anexo || !rbt12 || rbt12 <= 0 || data.monofasico_revenue <= 0) {
+        if (!anexo || !rbt12 || rbt12 <= 0 || dasPaid <= 0) {
           return {
             competence_month: month,
             total_revenue: data.total_revenue,
@@ -74,8 +74,8 @@ export function useCalculations(invoices: Invoice[], calculationInputs: Record<s
         // Fator PIS/COFINS é a soma das partilhas dos dois tributos na faixa correspondente
         const fatorPisCofins = (partilha['PIS/Pasep'] ?? 0) + (partilha.COFINS ?? 0);
 
-        // Fórmula do Crédito: Receita Monofásica * Alíquota Efetiva * Fator PIS/COFINS
-        const creditAmount = data.monofasico_revenue * effectiveAliquot * fatorPisCofins;
+        // Fórmula do Crédito (conforme instrução do usuário): DAS Pago * Fator PIS/COFINS
+        const creditAmount = dasPaid * fatorPisCofins;
         
         const nonMonofasicoRevenue = data.total_revenue - data.monofasico_revenue;
         const recalculatedDasDue = nonMonofasicoRevenue * effectiveAliquot;
