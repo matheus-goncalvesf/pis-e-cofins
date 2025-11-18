@@ -1,3 +1,4 @@
+// CompanyManager.tsx — versão corrigida
 
 import React, { useState } from 'react';
 import { Company } from '../types';
@@ -30,24 +31,28 @@ const CompanyManager: React.FC<Props> = ({ companies, onSelectCompany, onAddComp
     }
   };
   
-  const handleDelete = (e: React.MouseEvent, companyId: string) => {
-      e.stopPropagation(); // Prevent selecting the company when clicking delete
-      if (confirm('Tem certeza que deseja excluir esta empresa? Todos os dados e apurações serão perdidos permanentemente.')) {
+  const handleCardClick = (companyId: string) => {
+      onSelectCompany(companyId);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, companyId: string) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      if (window.confirm('Tem certeza que deseja excluir esta empresa? Todos os dados e apurações serão perdidos permanentemente.')) {
           onDeleteCompany(companyId);
       }
   };
 
-  // Basic CNPJ formatter
   const formatCnpj = (value: string) => {
     return value
-      .replace(/\D/g, '') // remove non-digits
+      .replace(/\D/g, '')
       .replace(/^(\d{2})(\d)/, '$1.$2')
       .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
       .replace(/\.(\d{3})(\d)/, '.$1/$2')
       .replace(/(\d{4})(\d)/, '$1-$2')
       .substring(0, 18);
   };
-
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
@@ -61,6 +66,7 @@ const CompanyManager: React.FC<Props> = ({ companies, onSelectCompany, onAddComp
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold text-gray-700">Selecione uma Empresa</h2>
             <button
+              type="button"
               onClick={() => setShowForm(!showForm)}
               className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors"
             >
@@ -105,23 +111,25 @@ const CompanyManager: React.FC<Props> = ({ companies, onSelectCompany, onAddComp
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {companies.map(company => (
-              <div key={company.id} className="relative p-6 border border-gray-200 rounded-lg hover:shadow-md transition-shadow bg-white group">
+              <div 
+                key={company.id} 
+                className="relative p-6 border border-gray-200 rounded-lg hover:shadow-md transition-shadow bg-white group cursor-pointer" 
+                onClick={() => handleCardClick(company.id)}
+              >
                 <button 
-                    onClick={(e) => handleDelete(e, company.id)}
-                    className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                    type="button"
+                    onClick={() => onDeleteCompany(company.id)}
+                    className="absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white border border-gray-200 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all shadow-sm z-50 hover:scale-110"
                     title="Excluir empresa"
                 >
-                    <TrashIcon />
+                   <TrashIcon />
                 </button>
 
                 <h3 className="text-lg font-bold text-gray-800 truncate pr-6">{company.name}</h3>
                 <p className="text-gray-500 font-mono my-2">{company.cnpj}</p>
-                <button
-                  onClick={() => onSelectCompany(company.id)}
-                  className="w-full mt-4 px-4 py-2 bg-white text-blue-600 font-semibold border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                >
-                  Selecionar
-                </button>
+                <div className="mt-4 text-blue-600 font-semibold text-sm">
+                  Clique para selecionar
+                </div>
               </div>
             ))}
              {companies.length === 0 && !showForm && (

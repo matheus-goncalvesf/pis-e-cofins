@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
-import { UploadIcon, ReviewIcon, ReportIcon, LogoIcon, CalcIcon } from './components/icons';
+import { UploadIcon, ReviewIcon, ReportIcon, LogoIcon, CalcIcon, TrashIcon } from './components/icons';
 import UploadArea from './components/UploadArea';
 import ReviewTable from './components/ReviewTable';
 import ReportsGenerator from './components/ReportsGenerator';
@@ -35,8 +36,9 @@ const App: React.FC = () => {
   // we either select a new valid company or go back to the selection screen.
   useEffect(() => {
       if (activeCompanyId && !companiesData[activeCompanyId]) {
+          // Active company no longer exists in data
           const companyIds = Object.keys(companiesData);
-          // If the active company was deleted, try to go to the first available, otherwise go to manager
+          // Try to switch to another company, or go to null (Manager) if none left
           setActiveCompanyId(companyIds.length > 0 ? companyIds[0] : null);
       }
   }, [companiesData, activeCompanyId]);
@@ -63,7 +65,23 @@ const App: React.FC = () => {
           delete newData[companyId];
           return newData;
       });
-      // The useEffect above will handle resetting activeCompanyId if needed
+  };
+
+  const handleDeleteActiveCompany = () => {
+      if (!activeCompanyId) return;
+      
+      const companyData = companiesData[activeCompanyId];
+      if (!companyData) return;
+
+      const companyName = companyData.company.name;
+      const idToDelete = activeCompanyId;
+      
+      if (window.confirm(`ATENÇÃO: Tem certeza que deseja excluir a empresa "${companyName}"?\n\nEsta ação apagará TODOS os dados, notas fiscais e apurações permanentemente.`)) {
+          // 1. Exit the company context first to prevent rendering errors
+          setActiveCompanyId(null);
+          // 2. Delete the data from the store
+          handleDeleteCompany(idToDelete);
+      }
   };
   
   const handleGoToCompanyManager = () => {
@@ -238,7 +256,8 @@ const App: React.FC = () => {
   const activeCompanyData = companiesData[activeCompanyId];
 
   if (!activeCompanyData) {
-      return null;
+      // Fallback if data is missing
+      return <div className="p-10 text-center">Erro: Dados da empresa não encontrados. <button className="text-blue-600 underline" onClick={() => setActiveCompanyId(null)}>Voltar</button></div>;
   }
 
   const renderPage = () => {
@@ -271,6 +290,7 @@ const App: React.FC = () => {
   const NavItem: React.FC<{ page: Page; label: string; icon: React.ReactNode; }> = ({ page, label, icon }) => (
     <li>
       <button
+        type="button"
         onClick={() => setCurrentPage(page)}
         className={`flex items-center p-2 w-full text-base font-normal rounded-lg transition duration-75 group ${
           currentPage === page
@@ -305,13 +325,24 @@ const App: React.FC = () => {
               <NavItem page="reports" label="Relatórios" icon={<ReportIcon />} />
             </ul>
           </div>
-          <div className="p-2 border-t border-gray-100 mt-4">
-            <button
+          
+          <div className="p-2 border-t border-gray-100 mt-4 space-y-2">
+             <button
+                type="button"
                 onClick={handleGoToCompanyManager}
                 className="w-full flex items-center justify-center text-sm text-gray-600 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-md transition-colors"
             >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z"></path></svg>
-                Trocar de Empresa
+                Voltar para Seleção
+            </button>
+            
+             <button
+                type="button"
+                onClick={handleDeleteActiveCompany}
+                className="w-full flex items-center justify-center text-sm text-red-600 hover:text-red-800 hover:bg-red-50 p-2 rounded-md transition-colors"
+            >
+                <TrashIcon />
+                <span className="ml-2">Excluir Empresa</span>
             </button>
           </div>
         </div>
