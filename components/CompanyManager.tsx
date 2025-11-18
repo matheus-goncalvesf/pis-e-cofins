@@ -1,14 +1,16 @@
+
 import React, { useState } from 'react';
 import { Company } from '../types';
-import { LogoIcon } from './icons';
+import { LogoIcon, TrashIcon } from './icons';
 
 interface Props {
   companies: Company[];
   onSelectCompany: (companyId: string) => void;
   onAddCompany: (company: Company) => void;
+  onDeleteCompany: (companyId: string) => void;
 }
 
-const CompanyManager: React.FC<Props> = ({ companies, onSelectCompany, onAddCompany }) => {
+const CompanyManager: React.FC<Props> = ({ companies, onSelectCompany, onAddCompany, onDeleteCompany }) => {
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState('');
   const [cnpj, setCnpj] = useState('');
@@ -28,6 +30,13 @@ const CompanyManager: React.FC<Props> = ({ companies, onSelectCompany, onAddComp
     }
   };
   
+  const handleDelete = (e: React.MouseEvent, companyId: string) => {
+      e.stopPropagation(); // Prevent selecting the company when clicking delete
+      if (confirm('Tem certeza que deseja excluir esta empresa? Todos os dados e apurações serão perdidos permanentemente.')) {
+          onDeleteCompany(companyId);
+      }
+  };
+
   // Basic CNPJ formatter
   const formatCnpj = (value: string) => {
     return value
@@ -96,8 +105,16 @@ const CompanyManager: React.FC<Props> = ({ companies, onSelectCompany, onAddComp
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {companies.map(company => (
-              <div key={company.id} className="p-6 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
-                <h3 className="text-lg font-bold text-gray-800 truncate">{company.name}</h3>
+              <div key={company.id} className="relative p-6 border border-gray-200 rounded-lg hover:shadow-md transition-shadow bg-white group">
+                <button 
+                    onClick={(e) => handleDelete(e, company.id)}
+                    className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                    title="Excluir empresa"
+                >
+                    <TrashIcon />
+                </button>
+
+                <h3 className="text-lg font-bold text-gray-800 truncate pr-6">{company.name}</h3>
                 <p className="text-gray-500 font-mono my-2">{company.cnpj}</p>
                 <button
                   onClick={() => onSelectCompany(company.id)}

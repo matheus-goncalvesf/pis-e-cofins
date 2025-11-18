@@ -7,7 +7,7 @@ import CompanyManager from './components/CompanyManager';
 import CalculationsInput from './components/CalculationsInput';
 import { parseNFeXML } from './utils/xmlParser';
 import { Company, CompanyData, Invoice, InvoiceItem, UploadFile, UploadStatus, CalculationInput } from './types';
-import { MONOFASICO_NCM_TABLE } from './data/mockData';
+import { checkIsMonofasico } from './utils/ncmMatcher';
 import { saveData, loadData } from './services/storage';
 
 
@@ -36,6 +36,7 @@ const App: React.FC = () => {
   useEffect(() => {
       if (activeCompanyId && !companiesData[activeCompanyId]) {
           const companyIds = Object.keys(companiesData);
+          // If the active company was deleted, try to go to the first available, otherwise go to manager
           setActiveCompanyId(companyIds.length > 0 ? companyIds[0] : null);
       }
   }, [companiesData, activeCompanyId]);
@@ -54,6 +55,15 @@ const App: React.FC = () => {
     }));
     setActiveCompanyId(company.id);
     setCurrentPage('upload');
+  };
+
+  const handleDeleteCompany = (companyId: string) => {
+      setCompaniesData(prev => {
+          const newData = { ...prev };
+          delete newData[companyId];
+          return newData;
+      });
+      // The useEffect above will handle resetting activeCompanyId if needed
   };
   
   const handleGoToCompanyManager = () => {
@@ -118,19 +128,22 @@ const App: React.FC = () => {
         const classifiedInvoice: Invoice = {
             ...parsedInvoice,
             items: parsedInvoice.items.map(item => {
-                const isNcmMono = MONOFASICO_NCM_TABLE.has(item.ncm_code);
+                // USE THE NEW MATCHER LOGIC HERE
+                const ncmCheck = checkIsMonofasico(item.ncm_code);
+                const isNcmMono = ncmCheck.isMonofasico;
                 const isCstMono = MONOFASICO_CSTS.has(item.cst_pis);
 
                 const needsReview = isNcmMono !== isCstMono;
                 
-                let rule = 'NÃO MONOFÁSICO';
-                if (isNcmMono && isCstMono) rule = 'OK: NCM E CST MONOFÁSICOS';
-                else if (isNcmMono && !isCstMono) rule = 'REVISAR: NCM MONOFÁSICO, CST NÃO';
-                else if (!isNcmMono && isCstMono) rule = 'REVISAR: NCM NÃO MONOFÁSICO, CST SIM';
+                let rule = ncmCheck.ruleDescription;
+                
+                // Refine rule description based on CST conflict
+                if (isNcmMono && !isCstMono) rule += ' (ATENÇÃO: CST NÃO É MONOFÁSICO)';
+                else if (!isNcmMono && isCstMono) rule = 'REVISAR: NCM NÃO MONOFÁSICO, MAS CST SIM';
 
                 return {
                     ...item,
-                    is_monofasico: isNcmMono, // A regra do NCM prevalece para o cálculo
+                    is_monofasico: isNcmMono, // A regra do NCM prevalece para o cálculo inicial
                     needs_human_review: needsReview,
                     classification_rule: rule,
                 };
@@ -195,7 +208,7 @@ const App: React.FC = () => {
 
   if (!activeCompanyId) {
     // Defensively filter the companies prop to prevent crashes from malformed data.
-    const validCompanies = Object.values(companiesData)
+    const validCompanies = (Object.values(companiesData) as CompanyData[])
       .filter(cd => cd && cd.company)
       .map(cd => cd.company);
 
@@ -203,14 +216,12 @@ const App: React.FC = () => {
               companies={validCompanies} 
               onSelectCompany={handleCompanySelect}
               onAddCompany={handleAddCompany}
+              onDeleteCompany={handleDeleteCompany}
             />;
   }
 
   const activeCompanyData = companiesData[activeCompanyId];
 
-  // Fallback for the rare case where activeCompanyId is set but data is missing.
-  // The useEffect above should handle resetting activeCompanyId, causing a re-render.
-  // Returning null here avoids a crash during the brief moment before the effect runs.
   if (!activeCompanyData) {
       return null;
   }
@@ -279,11 +290,12 @@ const App: React.FC = () => {
               <NavItem page="reports" label="Relatórios" icon={<ReportIcon />} />
             </ul>
           </div>
-          <div className="p-2">
+          <div className="p-2 border-t border-gray-100 mt-4">
             <button
                 onClick={handleGoToCompanyManager}
-                className="w-full text-sm text-gray-600 hover:text-blue-700 hover:bg-gray-100 p-2 rounded-md"
+                className="w-full flex items-center justify-center text-sm text-gray-600 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-md transition-colors"
             >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z"></path></svg>
                 Trocar de Empresa
             </button>
           </div>
