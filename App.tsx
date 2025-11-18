@@ -128,23 +128,32 @@ const App: React.FC = () => {
         const classifiedInvoice: Invoice = {
             ...parsedInvoice,
             items: parsedInvoice.items.map(item => {
-                // USE THE NEW MATCHER LOGIC HERE
+                // Lógica de Classificação
                 const ncmCheck = checkIsMonofasico(item.ncm_code);
                 const isNcmMono = ncmCheck.isMonofasico;
                 const isCstMono = MONOFASICO_CSTS.has(item.cst_pis);
 
-                const needsReview = isNcmMono !== isCstMono;
+                // AGORA: Todos os itens vão para revisão (imperativo), 
+                // mas já chegam com a sugestão marcada se o NCM bater.
+                const needsReview = true; 
                 
-                let rule = ncmCheck.ruleDescription;
+                let rule = '';
                 
-                // Refine rule description based on CST conflict
-                if (isNcmMono && !isCstMono) rule += ' (ATENÇÃO: CST NÃO É MONOFÁSICO)';
-                else if (!isNcmMono && isCstMono) rule = 'REVISAR: NCM NÃO MONOFÁSICO, MAS CST SIM';
+                // Define a descrição da regra para ajudar o humano
+                if (isNcmMono && !isCstMono) {
+                    rule = 'SUGESTÃO: SIM (Divergência: CST diz não)';
+                } else if (!isNcmMono && isCstMono) {
+                    rule = 'SUGESTÃO: NÃO (Divergência: CST diz sim)';
+                } else if (isNcmMono) {
+                    rule = 'SUGESTÃO: SIM (Automático)';
+                } else {
+                    rule = 'SUGESTÃO: NÃO';
+                }
 
                 return {
                     ...item,
-                    is_monofasico: isNcmMono, // A regra do NCM prevalece para o cálculo inicial
-                    needs_human_review: needsReview,
+                    is_monofasico: isNcmMono, // O sistema sugere marcando o checkbox
+                    needs_human_review: needsReview, // Obrigatório o humano confirmar (botão salvar)
                     classification_rule: rule,
                 };
             })
@@ -166,7 +175,7 @@ const App: React.FC = () => {
     const itemsToReviewCount = newInvoices.reduce((acc, inv) => acc + inv.items.filter(item => item.needs_human_review).length, 0);
     const failedCount = filesToProcess.length - processedCount;
 
-    alert(`${processedCount} faturas processadas com sucesso. ${failedCount > 0 ? `${failedCount} falharam.` : ''}\n${itemsToReviewCount} itens foram marcados para revisão manual.`);
+    alert(`${processedCount} faturas processadas com sucesso. ${failedCount > 0 ? `${failedCount} falharam.` : ''}\nTodos os ${itemsToReviewCount} itens foram enviados para revisão e validação manual.`);
     setCurrentPage('review');
   };
 
@@ -180,8 +189,14 @@ const App: React.FC = () => {
         invoices: prev[activeCompanyId].invoices.map(invoice => ({
           ...invoice,
           items: invoice.items.map(item => {
+            // Se o item foi editado, aplica as mudanças e remove flag de revisão.
             if (updatedItems[item.id]) {
               return { ...item, ...updatedItems[item.id], needs_human_review: false };
+            }
+            // Se o item estava sob revisão e NÃO foi editado, assumimos que o usuário aceitou o padrão (clicou em Salvar Tudo)
+            // Então removemos a flag needs_human_review.
+            if (item.needs_human_review) {
+                return { ...item, needs_human_review: false };
             }
             return item;
           })

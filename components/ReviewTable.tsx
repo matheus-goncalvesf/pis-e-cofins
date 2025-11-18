@@ -20,9 +20,10 @@ const ReviewTable: React.FC<{ invoices: Invoice[]; onSaveChanges: (editedItems: 
   };
   
   const handleSaveAllChanges = () => {
+      // Mesmo que editedItems esteja vazio, chamamos save para "confirmar" a revisão dos itens não alterados
       onSaveChanges(editedItems);
       setEditedItems({});
-      alert('Alterações salvas com sucesso!');
+      alert('Itens validados e alterações salvas com sucesso!');
   };
 
   const getItemValue = <K extends keyof InvoiceItem>(id: number, key: K, defaultValue: InvoiceItem[K]): InvoiceItem[K] => {
@@ -37,13 +38,16 @@ const ReviewTable: React.FC<{ invoices: Invoice[]; onSaveChanges: (editedItems: 
   };
 
   const getRulePill = (rule: string) => {
-    if (rule.startsWith('OK')) {
-        return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">{rule}</span>;
+    if (rule.includes('SIM (Automático)')) {
+        return <span className="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 border border-green-200">{rule}</span>;
     }
-    if (rule.startsWith('REVISAR')) {
-        return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">{rule}</span>;
+    if (rule.includes('Divergência')) {
+        return <span className="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">{rule}</span>;
     }
-    return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">{rule}</span>
+    if (rule.includes('SUGESTÃO: NÃO')) {
+         return <span className="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-600 border border-gray-200">{rule}</span>;
+    }
+    return <span className="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">{rule}</span>
   }
 
 
@@ -51,15 +55,16 @@ const ReviewTable: React.FC<{ invoices: Invoice[]; onSaveChanges: (editedItems: 
     <div className="space-y-8">
       <header className="flex justify-between items-center">
         <div>
-            <h1 className="text-3xl font-bold text-gray-900">Revisão Humana</h1>
-            <p className="mt-1 text-md text-gray-600">Itens com inconsistências entre NCM e CST foram marcados para sua atenção.</p>
+            <h1 className="text-3xl font-bold text-gray-900">Revisão Manual Obrigatória</h1>
+            <p className="mt-1 text-md text-gray-600">Confirme a classificação dos itens abaixo. O sistema pré-selecionou os monofásicos baseado nos NCMs.</p>
         </div>
         <button 
           onClick={handleSaveAllChanges} 
-          disabled={Object.keys(editedItems).length === 0}
-          className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          // Sempre habilitado se houver itens para revisar, para permitir "Aceitar Tudo"
+          className="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-colors flex items-center"
         >
-          Salvar Alterações
+          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+          Validar e Salvar Lista
         </button>
       </header>
 
@@ -76,7 +81,7 @@ const ReviewTable: React.FC<{ invoices: Invoice[]; onSaveChanges: (editedItems: 
                         <p className="font-bold text-lg text-gray-800">{invoice.total_value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
                     </div>
                      <div className="text-left md:text-right">
-                        <p className="text-sm text-gray-500">Total Monofásico</p>
+                        <p className="text-sm text-gray-500">Total Monofásico (Prévia)</p>
                         <p className="font-bold text-lg text-blue-600">{calculateMonofasicoTotal(invoice).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
                     </div>
                 </div>
@@ -86,11 +91,10 @@ const ReviewTable: React.FC<{ invoices: Invoice[]; onSaveChanges: (editedItems: 
                             <tr>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/5">Produto</th>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NCM</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CFOP</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CST PIS</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CFOP / CST</th>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classificação</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">É Monofásico?</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sugestão do Sistema</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monofásico?</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -113,8 +117,9 @@ const ReviewTable: React.FC<{ invoices: Invoice[]; onSaveChanges: (editedItems: 
                                 className="p-1 border border-gray-300 rounded-md w-28 font-mono"
                                 />
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-mono">{item.cfop}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-mono">{item.cst_pis}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-mono">
+                                {item.cfop} / {item.cst_pis}
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">{item.total_value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                              <td className="px-6 py-4 whitespace-nowrap">
                                 {getRulePill(item.classification_rule)}
@@ -138,7 +143,7 @@ const ReviewTable: React.FC<{ invoices: Invoice[]; onSaveChanges: (editedItems: 
                 </div>
             </div>
         ))}
-        {invoicesToReview.length === 0 && <div className="text-center p-8 text-gray-500 bg-white rounded-lg shadow-md">Nenhum item para revisar. Bom trabalho!</div>}
+        {invoicesToReview.length === 0 && <div className="text-center p-8 text-gray-500 bg-white rounded-lg shadow-md">Lista de revisão vazia.</div>}
       </div>
     </div>
   );
