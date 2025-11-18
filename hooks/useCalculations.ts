@@ -1,3 +1,4 @@
+
 import { useMemo } from 'react';
 import { Invoice, CalculationInput, CalculationResult, AnexoType } from '../types';
 import { simplesNacionalTables } from '../data/simplesNacionalTables';
@@ -8,8 +9,8 @@ const VALID_SALES_CFOPS = new Set(['5102', '5405', '6102']);
 const findFaixa = (anexo: AnexoType, rbt12: number) => {
   if (!simplesNacionalTables[anexo]) return null;
   const table = simplesNacionalTables[anexo];
-  // Faixas são de 'maior que' (de) até 'menor ou igual que' (ate)
-  return table.faixas.find(f => rbt12 > f.de && rbt12 <= f.ate);
+  // CORREÇÃO: Usar >= para incluir o limite inferior (essencial para RBT12 = 0 ou início exato da faixa)
+  return table.faixas.find(f => rbt12 >= f.de && rbt12 <= f.ate);
 };
 
 export function useCalculations(invoices: Invoice[], calculationInputs: Record<string, CalculationInput>): CalculationResult[] {
@@ -40,52 +41,56 @@ export function useCalculations(invoices: Invoice[], calculationInputs: Record<s
         const anexo = userInput?.anexo;
         const rbt12 = userInput?.rbt12 ?? 0;
 
-        if (!anexo || !rbt12 || rbt12 <= 0 || dasPaid <= 0) {
-          return {
+        const baseResult = {
             competence_month: month,
             total_revenue: data.total_revenue,
             monofasico_revenue: data.monofasico_revenue,
             das_paid: dasPaid,
+            anexo_used: anexo ? simplesNacionalTables[anexo]?.nome ?? anexo : 'N/A',
             effective_aliquot: 0,
-            recalculated_das_due: 0,
+            pis_cofins_share: 0,
+            recalculated_das_due: dasPaid,
             credit_amount: 0,
-          };
+        };
+
+        // Validações básicas
+        if (!anexo || dasPaid <= 0 || data.total_revenue <= 0) {
+          return baseResult;
         }
         
+        // 1. Encontrar a faixa correta no Anexo selecionado baseada no RBT12
         const faixa = findFaixa(anexo, rbt12);
         
         if (!faixa) {
-             return { // Retorna zerado se RBT12 estiver fora das faixas
-                competence_month: month,
-                total_revenue: data.total_revenue,
-                monofasico_revenue: data.monofasico_revenue,
-                das_paid: dasPaid,
-                effective_aliquot: 0,
-                recalculated_das_due: 0,
-                credit_amount: 0,
-            };
+             return baseResult;
         }
 
-        const { aliquota: aliquotaNominal, valorADeduzir, partilha } = faixa;
+        // 2. Calcular a Alíquota Efetiva REAL (Baseada no pagamento realizado)
+        // Fórmula: DAS Pago / Faturamento Total do Mês
+        const realEffectiveAliquot = dasPaid / data.total_revenue;
 
-        // Fórmula Alíquota Efetiva: ((RBT12 × Alíquota Nominal) - Parcela a Deduzir) / RBT12
-        const effectiveAliquot = ((rbt12 * aliquotaNominal) - valorADeduzir) / rbt12;
-
-        // Fator PIS/COFINS é a soma das partilhas dos dois tributos na faixa correspondente
-        const fatorPisCofins = (partilha['PIS/Pasep'] ?? 0) + (partilha.COFINS ?? 0);
-
-        // Fórmula do Crédito (conforme instrução do usuário): DAS Pago * Fator PIS/COFINS
-        const creditAmount = dasPaid * fatorPisCofins;
+        // 3. Identificar a porcentagem de repartição (Partilha) para PIS e COFINS na faixa específica
+        // Proteção extra contra chaves indefinidas
+        const partilhaPis = faixa.partilha['PIS/Pasep'] ?? 0;
+        const partilhaCofins = faixa.partilha['COFINS'] ?? 0;
         
-        const nonMonofasicoRevenue = data.total_revenue - data.monofasico_revenue;
-        const recalculatedDasDue = nonMonofasicoRevenue * effectiveAliquot;
+        const somaPartilhaPisCofins = partilhaPis + partilhaCofins;
+
+        // 4. Calcular a Alíquota Incidente de PIS/COFINS
+        // Quanto do DAS pago efetivamente corresponde a PIS/COFINS?
+        const aliquotaPisCofinsIncidente = realEffectiveAliquot * somaPartilhaPisCofins;
+
+        // 5. Calcular o Crédito
+        // O crédito é o valor pago indevidamente sobre a receita monofásica.
+        const creditAmount = data.monofasico_revenue * aliquotaPisCofinsIncidente;
+        
+        // 6. Novo DAS Devido (Segregação de Receitas)
+        const recalculatedDasDue = dasPaid - creditAmount;
 
         return {
-          competence_month: month,
-          total_revenue: data.total_revenue,
-          monofasico_revenue: data.monofasico_revenue,
-          das_paid: dasPaid,
-          effective_aliquot: effectiveAliquot,
+          ...baseResult,
+          effective_aliquot: realEffectiveAliquot, 
+          pis_cofins_share: somaPartilhaPisCofins,
           recalculated_das_due: recalculatedDasDue > 0 ? recalculatedDasDue : 0,
           credit_amount: creditAmount > 0 ? creditAmount : 0,
         };

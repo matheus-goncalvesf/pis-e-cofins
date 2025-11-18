@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { CompanyData } from '../types';
 import { useCalculations } from '../hooks/useCalculations';
@@ -8,6 +9,7 @@ import * as XLSX from 'xlsx';
 
 // Helper to format currency
 const formatCurrency = (value: number) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const formatPercent = (value: number) => (value * 100).toFixed(2) + '%';
 
 type ReportView = 'monthly' | 'yearly' | 'total';
 
@@ -63,10 +65,12 @@ const ReportsGenerator: React.FC<{ companyData: CompanyData }> = ({ companyData 
         // Monthly Details Sheet
         const monthly_details = calculations.map(c => ({
             "Mês": c.competence_month,
+            "Anexo": c.anexo_used,
             "Receita Total": c.total_revenue,
             "Receita Monofásica": c.monofasico_revenue,
             "DAS Pago": c.das_paid,
             "Alíquota Efetiva": c.effective_aliquot,
+            "Partilha PIS/COFINS": c.pis_cofins_share,
             "Novo DAS Devido": c.recalculated_das_due,
             "Crédito Apurado": c.credit_amount
         }));
@@ -102,11 +106,13 @@ const ReportsGenerator: React.FC<{ companyData: CompanyData }> = ({ companyData 
         
         autoTable(doc, {
             startY: 40,
-            head: [['Mês', 'Receita Total', 'Receita Monofásica', 'Crédito Apurado']],
+            head: [['Mês', 'Anexo', 'Receita', 'Monofásica', '% PIS/COF', 'Crédito']],
             body: calculations.map(c => [
                 c.competence_month,
+                c.anexo_used.replace('Anexo ', '').split(' - ')[0], // Shorten for PDF
                 formatCurrency(c.total_revenue),
                 formatCurrency(c.monofasico_revenue),
+                formatPercent(c.pis_cofins_share),
                 formatCurrency(c.credit_amount),
             ]),
             theme: 'striped'

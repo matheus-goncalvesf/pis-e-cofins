@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { UploadIcon, ReviewIcon, ReportIcon, LogoIcon, CalcIcon } from './components/icons';
 import UploadArea from './components/UploadArea';
 import ReviewTable from './components/ReviewTable';
@@ -16,13 +16,30 @@ type Page = 'upload' | 'review' | 'calculations' | 'reports';
 const MONOFASICO_CSTS = new Set(['04', '06', '07', '08', '09']);
 
 const App: React.FC = () => {
-  const [companiesData, setCompaniesData] = useState<Record<string, CompanyData>>(loadData());
-  const [activeCompanyId, setActiveCompanyId] = useState<string | null>(null);
+  // Load data once and derive initial states from it to avoid re-loading or inconsistencies.
+  const initialData = useMemo(() => loadData(), []);
+  const [companiesData, setCompaniesData] = useState<Record<string, CompanyData>>(initialData);
+  
+  const [activeCompanyId, setActiveCompanyId] = useState<string | null>(() => {
+    const companyIds = Object.keys(initialData);
+    return companyIds.length > 0 ? companyIds[0] : null;
+  });
+
   const [currentPage, setCurrentPage] = useState<Page>('upload');
 
   useEffect(() => {
     saveData(companiesData);
   }, [companiesData]);
+
+  // This effect ensures that if the active company is removed or data becomes inconsistent,
+  // we either select a new valid company or go back to the selection screen.
+  useEffect(() => {
+      if (activeCompanyId && !companiesData[activeCompanyId]) {
+          const companyIds = Object.keys(companiesData);
+          setActiveCompanyId(companyIds.length > 0 ? companyIds[0] : null);
+      }
+  }, [companiesData, activeCompanyId]);
+
 
   const handleCompanySelect = (companyId: string) => {
     setActiveCompanyId(companyId);
@@ -160,9 +177,6 @@ const App: React.FC = () => {
     }));
   };
   
-  // FIX: Correct the type of `inputs` to `Record<string, CalculationInput>`.
-  // A previous incorrect or weaker type (e.g., `any`) was causing type pollution in
-  // the `companiesData` state, leading to a type error when accessing `cd.company`.
   const handleCalculationsSave = (inputs: Record<string, CalculationInput>) => {
     if (!activeCompanyId) return;
     setCompaniesData(prev => ({
@@ -180,14 +194,26 @@ const App: React.FC = () => {
   };
 
   if (!activeCompanyId) {
+    // Defensively filter the companies prop to prevent crashes from malformed data.
+    const validCompanies = Object.values(companiesData)
+      .filter(cd => cd && cd.company)
+      .map(cd => cd.company);
+
     return <CompanyManager 
-              companies={Object.values(companiesData).map(cd => cd.company)} 
+              companies={validCompanies} 
               onSelectCompany={handleCompanySelect}
               onAddCompany={handleAddCompany}
             />;
   }
 
   const activeCompanyData = companiesData[activeCompanyId];
+
+  // Fallback for the rare case where activeCompanyId is set but data is missing.
+  // The useEffect above should handle resetting activeCompanyId, causing a re-render.
+  // Returning null here avoids a crash during the brief moment before the effect runs.
+  if (!activeCompanyData) {
+      return null;
+  }
 
   const renderPage = () => {
     switch (currentPage) {

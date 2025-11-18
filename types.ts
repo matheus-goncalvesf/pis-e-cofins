@@ -1,3 +1,4 @@
+
 export enum UploadStatus {
   Pending = 'AGUARDANDO',
   Failed = 'FALHA NO PROCESSAMENTO',
@@ -51,7 +52,9 @@ export interface CalculationResult {
   total_revenue: number;
   monofasico_revenue: number;
   das_paid: number;
+  anexo_used: string; // Added field
   effective_aliquot: number;
+  pis_cofins_share: number; // % of the DAS that corresponds to PIS/COFINS for the specific bracket
   recalculated_das_due: number;
   credit_amount: number;
 }

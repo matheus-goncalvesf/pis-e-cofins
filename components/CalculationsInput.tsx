@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { CompanyData, CalculationInput, AnexoType } from '../types';
 
@@ -9,6 +10,7 @@ interface Props {
 const CalculationsInput: React.FC<Props> = ({ companyData, onSave }) => {
   const [autoCalculateRbt12, setAutoCalculateRbt12] = useState(true);
   const [isNewCompany, setIsNewCompany] = useState(false);
+  const [globalAnexo, setGlobalAnexo] = useState<AnexoType | ''>('');
 
   const monthlyRevenues = useMemo(() => {
     const data: Record<string, { total_revenue: number; monofasico_revenue: number }> = {};
@@ -42,8 +44,6 @@ const CalculationsInput: React.FC<Props> = ({ companyData, onSave }) => {
 
     if (isNewCompany) {
       // Logic for companies with less than 12 months, based on proportional calculation.
-      // For any given month 'N' of activity, the RBT12 is calculated by taking the
-      // average revenue of all months from 1 to N, and then multiplying by 12.
       let cumulativeRevenue = 0;
       for (let i = 0; i < monthlyRevenues.length; i++) {
         const currentMonthData = monthlyRevenues[i];
@@ -64,7 +64,7 @@ const CalculationsInput: React.FC<Props> = ({ companyData, onSave }) => {
           }
           newRbt12Values[month] = rbt12Sum;
         } else {
-          newRbt12Values[month] = undefined; // Not enough history, leave for manual input
+          newRbt12Values[month] = undefined; // Not enough history
         }
       });
     }
@@ -76,7 +76,6 @@ const CalculationsInput: React.FC<Props> = ({ companyData, onSave }) => {
         const calculatedValue = newRbt12Values[month];
         updatedInputs[month] = {
           ...currentInputForMonth,
-          // Ensure the value is either a number with 2 decimal places or undefined.
           rbt12: calculatedValue !== undefined ? Number(calculatedValue.toFixed(2)) : undefined,
         };
       });
@@ -108,6 +107,22 @@ const CalculationsInput: React.FC<Props> = ({ companyData, onSave }) => {
       }
     }));
   };
+
+  const handleApplyGlobalAnexo = () => {
+      if (!globalAnexo) return;
+      if (confirm(`Deseja aplicar o ${getAnexoLabel(globalAnexo)} para TODAS as competências listadas abaixo?`)) {
+          setInputs(prev => {
+              const next = { ...prev };
+              monthlyRevenues.forEach(({ month }) => {
+                  next[month] = {
+                      ...next[month],
+                      anexo: globalAnexo
+                  };
+              });
+              return next;
+          });
+      }
+  };
   
   const handleSave = () => {
     onSave(inputs);
@@ -116,6 +131,17 @@ const CalculationsInput: React.FC<Props> = ({ companyData, onSave }) => {
   const isSaveDisabled = useMemo(() => {
       return JSON.stringify(inputs) === JSON.stringify(companyData.calculation_inputs);
   }, [inputs, companyData.calculation_inputs]);
+
+  const getAnexoLabel = (key: string) => {
+      switch(key) {
+          case 'anexo1': return 'Anexo I (Comércio)';
+          case 'anexo2': return 'Anexo II (Indústria)';
+          case 'anexo3': return 'Anexo III (Serviços)';
+          case 'anexo4': return 'Anexo IV (Serviços)';
+          case 'anexo5': return 'Anexo V (Serviços)';
+          default: return 'Selecione';
+      }
+  };
 
   return (
     <div className="space-y-8">
@@ -134,30 +160,57 @@ const CalculationsInput: React.FC<Props> = ({ companyData, onSave }) => {
       </header>
 
       <div className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-        <div className="p-4 border-b border-gray-200 bg-gray-50 flex items-center space-x-6 flex-wrap gap-y-4">
-            <label htmlFor="auto-calc-toggle" className="flex items-center cursor-pointer group">
-                <span className="text-sm font-medium text-gray-700 mr-3">Calcular RBT12 Automaticamente</span>
-                <div className="relative">
-                    <input type="checkbox" id="auto-calc-toggle" className="sr-only" checked={autoCalculateRbt12} onChange={() => setAutoCalculateRbt12(!autoCalculateRbt12)} />
-                    <div className={`block w-14 h-8 rounded-full transition ${autoCalculateRbt12 ? 'bg-blue-600' : 'bg-gray-300 group-hover:bg-gray-400'}`}></div>
-                    <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${autoCalculateRbt12 ? 'translate-x-6' : ''}`}></div>
-                </div>
-            </label>
+        <div className="p-4 border-b border-gray-200 bg-gray-50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            
+            <div className="flex items-center space-x-6 flex-wrap">
+                <label htmlFor="auto-calc-toggle" className="flex items-center cursor-pointer group">
+                    <span className="text-sm font-medium text-gray-700 mr-3">Calcular RBT12 Auto</span>
+                    <div className="relative">
+                        <input type="checkbox" id="auto-calc-toggle" className="sr-only" checked={autoCalculateRbt12} onChange={() => setAutoCalculateRbt12(!autoCalculateRbt12)} />
+                        <div className={`block w-14 h-8 rounded-full transition ${autoCalculateRbt12 ? 'bg-blue-600' : 'bg-gray-300 group-hover:bg-gray-400'}`}></div>
+                        <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${autoCalculateRbt12 ? 'translate-x-6' : ''}`}></div>
+                    </div>
+                </label>
 
-            {autoCalculateRbt12 && (
-                <div className="flex items-center">
-                    <input
-                        type="checkbox"
-                        id="is-new-company-checkbox"
-                        checked={isNewCompany}
-                        onChange={(e) => setIsNewCompany(e.target.checked)}
-                        className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <label htmlFor="is-new-company-checkbox" className="ml-2 block text-sm text-gray-900">
-                        Empresa com menos de 12 meses de atividade
-                    </label>
-                </div>
-            )}
+                {autoCalculateRbt12 && (
+                    <div className="flex items-center">
+                        <input
+                            type="checkbox"
+                            id="is-new-company-checkbox"
+                            checked={isNewCompany}
+                            onChange={(e) => setIsNewCompany(e.target.checked)}
+                            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <label htmlFor="is-new-company-checkbox" className="ml-2 block text-sm text-gray-900">
+                            Empresa nova (menos de 12 meses)
+                        </label>
+                    </div>
+                )}
+            </div>
+
+            <div className="flex items-center bg-blue-50 p-2 rounded-md border border-blue-100">
+                <span className="text-sm font-medium text-blue-800 mr-2">Definir Anexo para Todos:</span>
+                <select
+                    value={globalAnexo}
+                    onChange={(e) => setGlobalAnexo(e.target.value as AnexoType)}
+                    className="p-1 text-sm border border-blue-300 rounded-md mr-2"
+                >
+                    <option value="">Selecione...</option>
+                    <option value="anexo1">Anexo I</option>
+                    <option value="anexo2">Anexo II</option>
+                    <option value="anexo3">Anexo III</option>
+                    <option value="anexo4">Anexo IV</option>
+                    <option value="anexo5">Anexo V</option>
+                </select>
+                <button 
+                    onClick={handleApplyGlobalAnexo}
+                    disabled={!globalAnexo}
+                    className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700 disabled:bg-gray-300"
+                >
+                    Aplicar
+                </button>
+            </div>
+
         </div>
 
         <div className="overflow-x-auto">
@@ -165,9 +218,9 @@ const CalculationsInput: React.FC<Props> = ({ companyData, onSave }) => {
             <thead className="bg-gray-50">
               <tr>
                 <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mês/Ano</th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Receita Total (Vendas)</th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Receita Monofásica</th>
-                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Anexo</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Receita Total</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rec. Monofásica</th>
+                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-48">Anexo Selecionado</th>
                 <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RBT12 (R$)</th>
                 <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DAS Pago (R$)</th>
               </tr>
@@ -182,9 +235,9 @@ const CalculationsInput: React.FC<Props> = ({ companyData, onSave }) => {
                     <select
                       value={inputs[month]?.anexo ?? ''}
                       onChange={(e) => handleAnexoChange(month, e.target.value as AnexoType)}
-                      className="p-2 border border-gray-300 rounded-md w-36 bg-white"
+                      className="p-2 border border-gray-300 rounded-md w-full bg-white text-sm"
                     >
-                        <option value="" disabled>Selecione</option>
+                        <option value="" disabled>Selecione o Anexo</option>
                         <option value="anexo1">Anexo I (Comércio)</option>
                         <option value="anexo2">Anexo II (Indústria)</option>
                         <option value="anexo3">Anexo III</option>
@@ -195,18 +248,18 @@ const CalculationsInput: React.FC<Props> = ({ companyData, onSave }) => {
                   <td className="px-4 py-4 whitespace-nowrap">
                     <input
                       type="number"
-                      placeholder="Calcular ou inserir..."
+                      placeholder="RBT12..."
                       step="0.01"
                       value={inputs[month]?.rbt12 ?? ''}
                       onChange={(e) => handleInputChange(month, 'rbt12', e.target.value)}
-                      className="p-2 border border-gray-300 rounded-md w-36 disabled:bg-gray-100 disabled:text-gray-500"
+                      className="p-2 border border-gray-300 rounded-md w-32 disabled:bg-gray-100 disabled:text-gray-500"
                       disabled={autoCalculateRbt12}
                     />
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <input
                       type="number"
-                      placeholder="0.00"
+                      placeholder="Valor Pago"
                       step="0.01"
                       value={inputs[month]?.das_paid ?? ''}
                       onChange={(e) => handleInputChange(month, 'das_paid', e.target.value)}

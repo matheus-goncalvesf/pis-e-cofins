@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { CalculationResult } from '../types';
 
@@ -7,6 +8,7 @@ interface Props {
 }
 
 const formatCurrency = (value: number) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const formatPercent = (value: number) => (value * 100).toFixed(2) + '%';
 
 const StatCard: React.FC<{ title: string; value: string; }> = ({ title, value }) => (
     <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -19,19 +21,28 @@ const BuiltInReport: React.FC<Props> = ({ view, calculations }) => {
 
   const aggregatedData = useMemo(() => {
     if (view === 'yearly') {
-      const yearlyData: Record<string, Omit<CalculationResult, 'competence_month'>> = {};
+      const yearlyData: Record<string, Omit<CalculationResult, 'competence_month' | 'effective_aliquot' | 'pis_cofins_share' | 'anexo_used'> & { effective_aliquot_avg: number, pis_cofins_share_avg: number, count: number }> = {};
       calculations.forEach(c => {
         const year = c.competence_month.slice(0, 4);
         if (!yearlyData[year]) {
-          yearlyData[year] = { total_revenue: 0, monofasico_revenue: 0, das_paid: 0, effective_aliquot: 0, recalculated_das_due: 0, credit_amount: 0 };
+          yearlyData[year] = { total_revenue: 0, monofasico_revenue: 0, das_paid: 0, recalculated_das_due: 0, credit_amount: 0, effective_aliquot_avg: 0, pis_cofins_share_avg: 0, count: 0 };
         }
         yearlyData[year].total_revenue += c.total_revenue;
         yearlyData[year].monofasico_revenue += c.monofasico_revenue;
         yearlyData[year].das_paid += c.das_paid;
         yearlyData[year].recalculated_das_due += c.recalculated_das_due;
         yearlyData[year].credit_amount += c.credit_amount;
+        yearlyData[year].effective_aliquot_avg += c.effective_aliquot;
+        yearlyData[year].pis_cofins_share_avg += c.pis_cofins_share;
+        yearlyData[year].count += 1;
       });
-      return Object.entries(yearlyData).map(([year, data]) => ({ period: year, ...data }));
+      return Object.entries(yearlyData).map(([year, data]) => ({ 
+          period: year, 
+          ...data,
+          anexo_used: 'Múltiplos', // Aggregated
+          effective_aliquot: data.effective_aliquot_avg / data.count,
+          pis_cofins_share: data.pis_cofins_share_avg / data.count
+      }));
     }
     return []; // Monthly and total are handled differently
   }, [view, calculations]);
@@ -68,8 +79,8 @@ const BuiltInReport: React.FC<Props> = ({ view, calculations }) => {
     : aggregatedData;
 
   const headers = view === 'monthly' 
-    ? ['Mês/Ano', 'Receita Total', 'Rec. Monofásica', 'DAS Pago', 'Alíquota (%)', 'Novo DAS', 'Crédito'] 
-    : ['Ano', 'Receita Total', 'Rec. Monofásica', 'DAS Pago', 'Novo DAS', 'Crédito'];
+    ? ['Mês/Ano', 'Anexo', 'Receita Total', 'Rec. Monofásica', 'DAS Pago', 'Aliq. Efetiva', '% PIS/COFINS (Faixa)', 'Novo DAS', 'Crédito'] 
+    : ['Ano', 'Anexo', 'Receita Total', 'Rec. Monofásica', 'DAS Pago', 'Aliq. Efetiva Média', '% Média PIS/COFINS', 'Novo DAS', 'Crédito'];
 
   return (
     <div className="overflow-x-auto">
@@ -83,10 +94,12 @@ const BuiltInReport: React.FC<Props> = ({ view, calculations }) => {
           {dataToRender.map((row) => (
             <tr key={row.period}>
               <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-900">{row.period}</td>
+               <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500">{row.anexo_used}</td>
               <td className="px-6 py-4 whitespace-nowrap">{formatCurrency(row.total_revenue)}</td>
               <td className="px-6 py-4 whitespace-nowrap">{formatCurrency(row.monofasico_revenue)}</td>
               <td className="px-6 py-4 whitespace-nowrap">{formatCurrency(row.das_paid)}</td>
-              {view === 'monthly' && <td className="px-6 py-4 whitespace-nowrap">{(row.effective_aliquot * 100).toFixed(2)}%</td>}
+              <td className="px-6 py-4 whitespace-nowrap">{formatPercent(row.effective_aliquot)}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-gray-500">{formatPercent(row.pis_cofins_share)}</td>
               <td className="px-6 py-4 whitespace-nowrap">{formatCurrency(row.recalculated_das_due)}</td>
               <td className="px-6 py-4 whitespace-nowrap font-bold text-blue-600">{formatCurrency(row.credit_amount)}</td>
             </tr>
