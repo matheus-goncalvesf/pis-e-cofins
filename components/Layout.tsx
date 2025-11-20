@@ -49,7 +49,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         <img
                             src="/assets/logo.png"
                             alt="RecuperaTax"
-                            className="h-40 w-auto"
+                            className="h-auto w-full max-w-[200px] object-contain"
                         />
                     </div>
 
