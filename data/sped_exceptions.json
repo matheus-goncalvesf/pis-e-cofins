@@ -1,0 +1,37 @@
+[
+    {
+        "ncm": "30039056",
+        "description": "Exceção do prefixo 30.03 - Não é monofásico",
+        "source": "SPED 4.3.10"
+    },
+    {
+        "ncm": "30049046",
+        "description": "Exceção do prefixo 30.04 - Não é monofásico",
+        "source": "SPED 4.3.10"
+    },
+    {
+        "ncm": "22011000",
+        "description": "Exceção Ex 01 do código 22.01.10.00 - Não é monofásico",
+        "source": "SPED 4.3.10"
+    },
+    {
+        "ncm": "22029000",
+        "description": "Exceção Ex 01 do código 22.02.90.00 - Não é monofásico",
+        "source": "SPED 4.3.10"
+    },
+    {
+        "ncm": "22089000",
+        "description": "Exceção Ex 01 - Álcool etílico não desnaturado - Não é monofásico",
+        "source": "SPED 4.3.10"
+    },
+    {
+        "ncm": "21069010",
+        "description": "Exceção Ex 02 - Não é monofásico",
+        "source": "SPED 4.3.10"
+    },
+    {
+        "ncm": "38260000",
+        "description": "Exceção Ex 01 do código 3826.00.00 - Biodiesel não monofásico em certas condições",
+        "source": "SPED 4.3.10"
+    }
+]
