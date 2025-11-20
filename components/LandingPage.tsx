@@ -11,7 +11,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignup }) => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
             {/* Header */}
-            <header className="container mx-auto px-4 py-6 flex justify-between items-center">
+            <header className="container mx-auto px-4 py-6 flex justify-between items-center relative z-20">
                 <div className="flex items-center gap-3">
                     <img src="/assets/logo.png" alt="RecuperaTax" className="h-12" />
                 </div>
@@ -28,33 +28,47 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignup }) => {
                 </div>
             </header>
 
-            {/* Hero Section */}
-            <section className="container mx-auto px-4 py-20 text-center">
-                <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-                        Recupere seus créditos de
-                        <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"> PIS/COFINS</span>
-                    </h1>
-                    <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                        Plataforma profissional para empresas do Simples Nacional identificarem e recuperarem créditos tributários de produtos monofásicos.
-                    </p>
-                    <div className="flex gap-4 justify-center">
-                        <Button
-                            size="lg"
-                            onClick={onSignup}
-                            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-lg px-8 py-6 shadow-xl"
-                        >
-                            Calcular Meus Créditos
-                            <ArrowRight className="ml-2 h-5 w-5" />
-                        </Button>
-                        <Button
-                            size="lg"
-                            variant="outline"
-                            onClick={onLogin}
-                            className="text-lg px-8 py-6 border-2"
-                        >
-                            Já tenho conta
-                        </Button>
+            {/* Hero Section with Background Banner */}
+            <section className="relative overflow-hidden">
+                {/* Banner Background - Fixed at top, shifted to the right */}
+                <div
+                    className="absolute top-0 w-full h-[672px] bg-no-repeat opacity-95"
+                    style={{
+                        backgroundImage: 'url(/assets/banner_landing_page.png)',
+                        backgroundSize: 'auto 100%',
+                        backgroundPosition: 'calc(100% + 200px) top'
+                    }}
+                />
+                <div className="absolute top-0 left-0 w-full h-[672px] bg-gradient-to-br from-blue-50/20 via-white/40 to-transparent" />
+
+                {/* Hero Content */}
+                <div className="container mx-auto px-4 py-20 text-center relative z-10">
+                    <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                            Recupere seus créditos de
+                            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"> PIS/COFINS</span>
+                        </h1>
+                        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                            Plataforma profissional para empresas do Simples Nacional identificarem e recuperarem créditos tributários de produtos monofásicos.
+                        </p>
+                        <div className="flex gap-4 justify-center">
+                            <Button
+                                size="lg"
+                                onClick={onSignup}
+                                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-lg px-8 py-6 shadow-xl"
+                            >
+                                Calcular Meus Créditos
+                                <ArrowRight className="ml-2 h-5 w-5" />
+                            </Button>
+                            <Button
+                                size="lg"
+                                variant="outline"
+                                onClick={onLogin}
+                                className="text-lg px-8 py-6 border-2"
+                            >
+                                Já tenho conta
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </section>
