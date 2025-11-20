@@ -219,7 +219,7 @@ const App: React.FC = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <CompanyManager
-          companies={companies || []}
+          companies={(companies || []).map(c => ({ ...c, id: c.id!, created_at: c.created_at || new Date().toISOString() }))}
           onSelectCompany={(id) => {
             setSelectedCompanyId(id);
             setCurrentView('dashboard');

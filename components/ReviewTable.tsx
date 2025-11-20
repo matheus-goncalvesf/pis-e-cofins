@@ -3,7 +3,7 @@ import { Invoice } from '../types';
 import { Search, ChevronDown, ChevronRight, CheckCircle2, Save } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
+
 import { Input } from './ui/input';
 import { cn } from '../utils/cn';
 
@@ -16,7 +16,7 @@ const ReviewTable: React.FC<ReviewTableProps> = ({ invoices, onSave }) => {
   const [localInvoices, setLocalInvoices] = useState<Invoice[]>(invoices);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'monofasico' | 'tributado' | 'pending_review'>('all');
-  const [expandedInvoiceId, setExpandedInvoiceId] = useState<string | null>(null);
+  const [expandedInvoiceId, setExpandedInvoiceId] = useState<number | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
 
   // Update local state when invoices prop changes
@@ -25,7 +25,7 @@ const ReviewTable: React.FC<ReviewTableProps> = ({ invoices, onSave }) => {
     setHasChanges(false);
   }, [invoices]);
 
-  const toggleItemStatus = (invoiceId: string, itemId: number) => {
+  const toggleItemStatus = (invoiceId: number, itemId: number) => {
     const updatedInvoices = localInvoices.map(inv => {
       if (inv.id === invoiceId) {
         return {
@@ -49,7 +49,7 @@ const ReviewTable: React.FC<ReviewTableProps> = ({ invoices, onSave }) => {
     setHasChanges(true);
   };
 
-  const confirmItemReview = (invoiceId: string, itemId: number) => {
+  const confirmItemReview = (invoiceId: number, itemId: number) => {
     const updatedInvoices = localInvoices.map(inv => {
       if (inv.id === invoiceId) {
         return {
@@ -94,7 +94,7 @@ const ReviewTable: React.FC<ReviewTableProps> = ({ invoices, onSave }) => {
     });
   }, [localInvoices, searchTerm, filterStatus]);
 
-  const toggleInvoice = (id: string) => {
+  const toggleInvoice = (id: number) => {
     setExpandedInvoiceId(expandedInvoiceId === id ? null : id);
   };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Upload, FileText, Calculator, Menu, X, LogOut, Building2 } from 'lucide-react';
+import { LayoutDashboard, Upload, FileText, Calculator, Menu, LogOut, Building2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '../utils/cn';
 

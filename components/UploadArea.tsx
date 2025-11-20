@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { UploadFile, UploadStatus } from '../types';
-import { Upload, FileText, X } from 'lucide-react';
+import { Upload, FileText } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
