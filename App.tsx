@@ -122,6 +122,11 @@ const App: React.FC = () => {
     await db.files.bulkAdd(filesWithId);
   };
 
+  const handleDeleteFile = async (fileId: number) => {
+    if (!selectedCompanyId) return;
+    await db.files.delete(fileId);
+  };
+
   const handleProcessFiles = async () => {
     if (!activeCompanyData || !selectedCompanyId) return;
 
@@ -254,6 +259,7 @@ const App: React.FC = () => {
           files={activeCompanyData.uploadedFiles}
           onFilesUploaded={handleFilesUploaded}
           onProcessFiles={handleProcessFiles}
+          onDeleteFile={handleDeleteFile}
         />
       )}
 

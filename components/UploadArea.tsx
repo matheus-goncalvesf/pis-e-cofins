@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { UploadFile, UploadStatus } from '../types';
-import { Upload, FileText } from 'lucide-react';
+import { Upload, FileText, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
@@ -10,9 +10,10 @@ interface UploadAreaProps {
   files: UploadFile[];
   onFilesUploaded: (files: UploadFile[]) => void;
   onProcessFiles: () => void;
+  onDeleteFile: (fileId: number) => void;
 }
 
-const UploadArea: React.FC<UploadAreaProps> = ({ files, onFilesUploaded, onProcessFiles }) => {
+const UploadArea: React.FC<UploadAreaProps> = ({ files, onFilesUploaded, onProcessFiles, onDeleteFile }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,6 +114,18 @@ const UploadArea: React.FC<UploadAreaProps> = ({ files, onFilesUploaded, onProce
                       {file.status === UploadStatus.Processed && <Badge variant="success" className="bg-green-500/15 text-green-700 hover:bg-green-500/25 border-green-200">Processado</Badge>}
                       {file.status === UploadStatus.Failed && <Badge variant="destructive">Erro</Badge>}
                       {file.status === UploadStatus.Pending && <Badge variant="secondary">Pendente</Badge>}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={() => {
+                          if (window.confirm('Tem certeza que deseja excluir este arquivo?')) {
+                            onDeleteFile(file.id);
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 ))}

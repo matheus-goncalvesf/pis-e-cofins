@@ -17,12 +17,10 @@ const ReviewTable: React.FC<ReviewTableProps> = ({ invoices, onSave }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'monofasico' | 'tributado' | 'pending_review'>('all');
   const [expandedInvoiceId, setExpandedInvoiceId] = useState<number | null>(null);
-  const [hasChanges, setHasChanges] = useState(false);
 
   // Update local state when invoices prop changes
   useEffect(() => {
     setLocalInvoices(invoices);
-    setHasChanges(false);
   }, [invoices]);
 
   const toggleItemStatus = (invoiceId: number, itemId: number) => {
@@ -46,7 +44,6 @@ const ReviewTable: React.FC<ReviewTableProps> = ({ invoices, onSave }) => {
       return inv;
     });
     setLocalInvoices(updatedInvoices);
-    setHasChanges(true);
   };
 
   const confirmItemReview = (invoiceId: number, itemId: number) => {
@@ -68,12 +65,10 @@ const ReviewTable: React.FC<ReviewTableProps> = ({ invoices, onSave }) => {
       return inv;
     });
     setLocalInvoices(updatedInvoices);
-    setHasChanges(true);
   };
 
   const handleSave = () => {
     onSave(localInvoices);
-    setHasChanges(false);
   };
 
   const filteredInvoices = useMemo(() => {
@@ -136,7 +131,6 @@ const ReviewTable: React.FC<ReviewTableProps> = ({ invoices, onSave }) => {
             </select>
             <Button
               onClick={handleSave}
-              disabled={!hasChanges}
               className="gap-2"
             >
               <Save className="h-4 w-4" />
