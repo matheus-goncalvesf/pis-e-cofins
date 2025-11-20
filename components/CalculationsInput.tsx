@@ -10,12 +10,29 @@ interface CalculationsInputProps {
   invoices: Invoice[];
   initialData: Record<string, CalculationInput>;
   onSave: (inputs: Record<string, CalculationInput>) => void;
+  companyId: number;
 }
 
-const CalculationsInput: React.FC<CalculationsInputProps> = ({ invoices, initialData, onSave }) => {
-  const [autoCalculateRbt12, setAutoCalculateRbt12] = useState(true);
-  const [isNewCompany, setIsNewCompany] = useState(false);
+const CalculationsInput: React.FC<CalculationsInputProps> = ({ invoices, initialData, onSave, companyId }) => {
+  // Load settings from localStorage
+  const [autoCalculateRbt12, setAutoCalculateRbt12] = useState(() => {
+    const saved = localStorage.getItem(`autoCalculateRbt12_${companyId}`);
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  const [isNewCompany, setIsNewCompany] = useState(() => {
+    const saved = localStorage.getItem(`isNewCompany_${companyId}`);
+    return saved !== null ? JSON.parse(saved) : false;
+  });
   const [globalAnexo, setGlobalAnexo] = useState<AnexoType | ''>('');
+
+  // Save settings to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem(`autoCalculateRbt12_${companyId}`, JSON.stringify(autoCalculateRbt12));
+  }, [autoCalculateRbt12, companyId]);
+
+  useEffect(() => {
+    localStorage.setItem(`isNewCompany_${companyId}`, JSON.stringify(isNewCompany));
+  }, [isNewCompany, companyId]);
 
   const monthlyRevenues = useMemo(() => {
     const data: Record<string, { total_revenue: number; monofasico_revenue: number }> = {};

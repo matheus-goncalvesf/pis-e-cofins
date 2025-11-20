@@ -276,6 +276,7 @@ const App: React.FC = () => {
           invoices={activeCompanyData.invoices}
           initialData={activeCompanyData.calculation_inputs}
           onSave={handleCalculationsSave}
+          companyId={selectedCompanyId}
         />
       )}
 

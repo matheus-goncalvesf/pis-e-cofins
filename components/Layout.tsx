@@ -96,7 +96,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         </Button>
                     </div>
 
-                    <div className="p-4 border-t border-border">
+                    <div className="mt-auto p-4 border-t border-border sticky bottom-0 bg-card">
                         {companyName && (
                             <div className="mb-4 px-2">
                                 <p className="text-xs text-muted-foreground">Empresa Ativa</p>
