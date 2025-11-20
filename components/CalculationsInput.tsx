@@ -153,32 +153,6 @@ const CalculationsInput: React.FC<CalculationsInputProps> = ({ invoices, initial
     }));
   };
 
-  // Auto-update includeInReport based on data completeness
-  useEffect(() => {
-    setInputs(prev => {
-      const next = { ...prev };
-      monthlyRevenues.forEach(({ month }) => {
-        const isComplete = isMonthDataComplete(month);
-        const currentValue = next[month]?.includeInReport;
-
-        // Only auto-set if not explicitly set by user
-        // If data becomes complete and wasn't included, keep it unchecked (user choice)
-        // If data becomes incomplete, auto-uncheck
-        if (!isComplete && currentValue !== false) {
-          next[month] = {
-            ...next[month],
-            includeInReport: false
-          };
-        } else if (isComplete && currentValue === undefined) {
-          next[month] = {
-            ...next[month],
-            includeInReport: true
-          };
-        }
-      });
-      return next;
-    });
-  }, [inputs, monthlyRevenues]);
 
   const handleSave = () => {
     onSave(inputs);

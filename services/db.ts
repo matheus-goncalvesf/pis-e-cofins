@@ -44,12 +44,11 @@ export class PisCofinsDb extends Dexie {
             files: '++id, companyId',
             calculations: '[companyId+competence_month]'
         }).upgrade(async tx => {
-            // Set includeInReport to true for existing records with complete data
+            // Set includeInReport to true for all existing records (default: include all months)
             const calculations = await tx.table('calculations').toArray();
             for (const calc of calculations) {
-                const isComplete = !!(calc.anexo && calc.rbt12 && calc.das_paid);
                 await tx.table('calculations').update([calc.companyId, calc.competence_month], {
-                    includeInReport: isComplete
+                    includeInReport: true
                 });
             }
         });

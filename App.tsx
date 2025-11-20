@@ -50,7 +50,8 @@ const App: React.FC = () => {
       calculationInputs[c.competence_month] = {
         rbt12: c.rbt12,
         das_paid: c.das_paid,
-        anexo: c.anexo
+        anexo: c.anexo,
+        includeInReport: c.includeInReport
       };
     });
 
