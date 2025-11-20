@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Limpar Banco de Dados</title>
+</head>
+
+<body>
+    <h1>Limpar Banco de Dados IndexedDB</h1>
+    <button onclick="clearDatabase()">Limpar PisCofinsDb</button>
+    <div id="result"></div>
+
+    <script>
+        function clearDatabase() {
+            const request = indexedDB.deleteDatabase('PisCofinsDb');
+
+            request.onsuccess = function () {
+                document.getElementById('result').innerHTML = '<p style="color: green;">Banco de dados limpo com sucesso! Recarregue a aplicação.</p>';
+            };
+
+            request.onerror = function () {
+                document.getElementById('result').innerHTML = '<p style="color: red;">Erro ao limpar banco de dados.</p>';
+            };
+
+            request.onblocked = function () {
+                document.getElementById('result').innerHTML = '<p style="color: orange;">Banco bloqueado. Feche todas as abas da aplicação e tente novamente.</p>';
+            };
+        }
+    </script>
+</body>
+
+</html>

@@ -1,11 +1,13 @@
-
 import React, { useState } from 'react';
-import { CompanyData } from '../types';
+import { Company, Invoice, CalculationInput } from '../types';
 import { useCalculations } from '../hooks/useCalculations';
 import BuiltInReport from './BuiltInReport';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import { FileSpreadsheet, FileText, Loader2, BarChart3 } from 'lucide-react';
+import { Button } from './ui/button';
+import { Card, CardContent, CardHeader } from './ui/card';
 
 // Helper to format currency
 const formatCurrency = (value: number) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -13,15 +15,21 @@ const formatPercent = (value: number) => (value * 100).toFixed(2) + '%';
 
 type ReportView = 'monthly' | 'yearly' | 'total';
 
-const ReportsGenerator: React.FC<{ companyData: CompanyData }> = ({ companyData }) => {
+interface ReportsGeneratorProps {
+    company: Company;
+    invoices: Invoice[];
+    calculationInputs: Record<string, CalculationInput>;
+}
+
+const ReportsGenerator: React.FC<ReportsGeneratorProps> = ({ company, invoices, calculationInputs }) => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [currentView, setCurrentView] = useState<ReportView>('monthly');
-    
-    const calculations = useCalculations(companyData.invoices, companyData.calculation_inputs);
+
+    const calculations = useCalculations(invoices, calculationInputs);
 
     const handleGenerateReport = (format: 'Excel' | 'PDF') => {
         if (calculations.length === 0) {
-            alert('Não há dados calculados para gerar relatórios. Preencha os dados na tela de Apuração & Cálculo.');
+            // alert('Não há dados calculados para gerar relatórios. Preencha os dados na tela de Apuração & Cálculo.');
             return;
         }
         setIsGenerating(true);
@@ -48,7 +56,7 @@ const ReportsGenerator: React.FC<{ companyData: CompanyData }> = ({ companyData 
         const totalCredit = calculations.reduce((sum, calc) => sum + calc.credit_amount, 0);
         const totalRevenue = calculations.reduce((sum, calc) => sum + calc.total_revenue, 0);
         const totalMonofasico = calculations.reduce((sum, calc) => sum + calc.monofasico_revenue, 0);
-        
+
         const summary_data = [
             { Descrição: "Crédito Total Apurado", Valor: totalCredit },
             { Descrição: "Receita Total no Período", Valor: totalRevenue },
@@ -78,7 +86,7 @@ const ReportsGenerator: React.FC<{ companyData: CompanyData }> = ({ companyData 
         XLSX.utils.book_append_sheet(wb, wsMonthly, "Apuração Mensal");
 
         // Items Sheet
-        const detailedItems = companyData.invoices.flatMap(inv => 
+        const detailedItems = invoices.flatMap(inv =>
             inv.items.filter(item => item.is_monofasico).map(item => ({
                 'Chave de Acesso': inv.access_key,
                 'Data Emissão': new Date(inv.issue_date).toLocaleDateString('pt-BR'),
@@ -91,19 +99,19 @@ const ReportsGenerator: React.FC<{ companyData: CompanyData }> = ({ companyData 
         const wsItems = XLSX.utils.json_to_sheet(detailedItems);
         XLSX.utils.book_append_sheet(wb, wsItems, "Itens Monofásicos");
 
-        XLSX.writeFile(wb, `Relatorio_PIS-COFINS_${companyData.company.name}.xlsx`);
+        XLSX.writeFile(wb, `Relatorio_PIS-COFINS_${company.name}.xlsx`);
     };
 
     const generatePdf = () => {
         const doc = new jsPDF();
-        
-        doc.text(`Relatório de Créditos - ${companyData.company.name}`, 14, 20);
+
+        doc.text(`Relatório de Créditos - ${company.name}`, 14, 20);
         doc.setFontSize(12);
-        
+
         const totalCredit = calculations.reduce((sum, calc) => sum + calc.credit_amount, 0);
-        
+
         doc.text(`Crédito Total Apurado: ${formatCurrency(totalCredit)}`, 14, 30);
-        
+
         autoTable(doc, {
             startY: 40,
             head: [['Mês', 'Anexo', 'Receita', 'Monofásica', '% PIS/COF', 'Crédito']],
@@ -118,52 +126,81 @@ const ReportsGenerator: React.FC<{ companyData: CompanyData }> = ({ companyData 
             theme: 'striped'
         });
 
-        doc.save(`Relatorio_PIS-COFINS_${companyData.company.name}.pdf`);
+        doc.save(`Relatorio_PIS-COFINS_${company.name}.pdf`);
     };
 
 
     return (
-        <div className="space-y-8">
-            <header>
-                <h1 className="text-3xl font-bold text-gray-900">Relatórios</h1>
-                <p className="mt-1 text-md text-gray-600">Analise os resultados e exporte os dados consolidados.</p>
-            </header>
-
-             <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                <div className="flex justify-between items-center mb-4">
-                    <div className="flex border border-gray-200 rounded-lg p-1 space-x-1 bg-gray-50">
-                        <button onClick={() => setCurrentView('monthly')} className={`px-4 py-1 rounded-md text-sm font-semibold transition-colors ${currentView === 'monthly' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:bg-gray-200'}`}>Mensal</button>
-                        <button onClick={() => setCurrentView('yearly')} className={`px-4 py-1 rounded-md text-sm font-semibold transition-colors ${currentView === 'yearly' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:bg-gray-200'}`}>Anual</button>
-                        <button onClick={() => setCurrentView('total')} className={`px-4 py-1 rounded-md text-sm font-semibold transition-colors ${currentView === 'total' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:bg-gray-200'}`}>Período Total</button>
-                    </div>
-                    <div className="flex space-x-4">
-                        <button
-                            onClick={() => handleGenerateReport('Excel')}
-                            disabled={isGenerating || calculations.length === 0}
-                            className="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-gray-400"
-                        >
-                            {isGenerating ? '...' : 'Gerar Excel'}
-                        </button>
-                        <button
-                            onClick={() => handleGenerateReport('PDF')}
-                            disabled={isGenerating || calculations.length === 0}
-                            className="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-gray-400"
-                        >
-                            {isGenerating ? '...' : 'Gerar PDF'}
-                        </button>
-                    </div>
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">Relatórios</h1>
+                    <p className="mt-1 text-muted-foreground">Analise os resultados e exporte os dados consolidados.</p>
                 </div>
-                 {isGenerating && (
-                         <div className="text-center text-sm text-gray-600 flex items-center justify-center my-4">
-                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Seu relatório está sendo preparado...
-                         </div>
-                    )}
-                <BuiltInReport view={currentView} calculations={calculations} />
             </div>
+
+            <Card>
+                <CardHeader className="pb-4">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div className="flex items-center bg-muted/50 p-1 rounded-lg border">
+                            <Button
+                                variant={currentView === 'monthly' ? 'default' : 'ghost'}
+                                size="sm"
+                                onClick={() => setCurrentView('monthly')}
+                                className="h-8"
+                            >
+                                Mensal
+                            </Button>
+                            <Button
+                                variant={currentView === 'yearly' ? 'default' : 'ghost'}
+                                size="sm"
+                                onClick={() => setCurrentView('yearly')}
+                                className="h-8"
+                            >
+                                Anual
+                            </Button>
+                            <Button
+                                variant={currentView === 'total' ? 'default' : 'ghost'}
+                                size="sm"
+                                onClick={() => setCurrentView('total')}
+                                className="h-8"
+                            >
+                                Período Total
+                            </Button>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button
+                                onClick={() => handleGenerateReport('Excel')}
+                                disabled={isGenerating || calculations.length === 0}
+                                variant="outline"
+                                className="text-green-700 border-green-200 hover:bg-green-50 hover:text-green-800"
+                            >
+                                {isGenerating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <FileSpreadsheet className="w-4 h-4 mr-2" />}
+                                Excel
+                            </Button>
+                            <Button
+                                onClick={() => handleGenerateReport('PDF')}
+                                disabled={isGenerating || calculations.length === 0}
+                                variant="outline"
+                                className="text-red-700 border-red-200 hover:bg-red-50 hover:text-red-800"
+                            >
+                                {isGenerating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <FileText className="w-4 h-4 mr-2" />}
+                                PDF
+                            </Button>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    {calculations.length === 0 ? (
+                        <div className="text-center p-12 text-muted-foreground">
+                            <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                            <p>Não há dados calculados para gerar relatórios. Preencha os dados na tela de Apuração & Cálculo.</p>
+                        </div>
+                    ) : (
+                        <BuiltInReport view={currentView} calculations={calculations} />
+                    )}
+                </CardContent>
+            </Card>
         </div>
     );
 };

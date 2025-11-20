@@ -13,6 +13,7 @@ export interface UploadFile {
   progress: number;
   size: number;
   content: string;
+  uploadDate: string;
 }
 
 export interface InvoiceItem {
@@ -28,6 +29,8 @@ export interface InvoiceItem {
   classification_confidence: number;
   classification_rule: string;
   needs_human_review: boolean;
+  manual_override?: boolean;
+  human_reviewed?: boolean;
 }
 
 export interface Invoice {
@@ -60,14 +63,15 @@ export interface CalculationResult {
 }
 
 export interface Company {
-    id: string;
-    name: string;
-    cnpj: string;
+  id: number;
+  name: string;
+  cnpj: string;
+  created_at: string;
 }
 
 export interface CompanyData {
-    company: Company;
-    uploadedFiles: UploadFile[];
-    invoices: Invoice[];
-    calculation_inputs: Record<string, CalculationInput>; // Keyed by competence_month "YYYY-MM"
+  company: Company;
+  uploadedFiles: UploadFile[];
+  invoices: Invoice[];
+  calculation_inputs: Record<string, CalculationInput>; // Keyed by competence_month "YYYY-MM"
 }

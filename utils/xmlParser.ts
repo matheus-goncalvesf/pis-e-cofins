@@ -32,11 +32,11 @@ const findCst = (impostoEl: Element | undefined, taxName: 'PIS' | 'COFINS'): str
 }
 
 
-export const parseNFeXML = (xmlString: string): Invoice | null => {
+export const parseNFeXML = (xmlString: string, fileName?: string): Invoice | null => {
     try {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlString, "application/xml");
-        
+
         const errorNode = xmlDoc.querySelector("parsererror");
         if (errorNode) {
             console.error("Error parsing XML:", errorNode.textContent);
@@ -45,7 +45,7 @@ export const parseNFeXML = (xmlString: string): Invoice | null => {
 
         const rootEl = xmlDoc.documentElement;
         let infNFe: Element | undefined | null = null;
-        
+
         // Handle both <nfeProc><NFe><infNFe>...</NFe></nfeProc> and <NFe><infNFe>...</infNFe></NFe> structures
         if (rootEl.localName === 'nfeProc') {
             const nfeNode = findChild(rootEl, 'NFe');
@@ -90,7 +90,7 @@ export const parseNFeXML = (xmlString: string): Invoice | null => {
 
         const accessKey = infNFe.getAttribute("Id")?.replace("NFe", "") ?? `INV_${Date.now()}`;
         const issueDateString = getChildText(ide, "dhEmi");
-        
+
         const invoice: Invoice = {
             id: Date.now() + Math.random(),
             access_key: accessKey,
@@ -101,7 +101,7 @@ export const parseNFeXML = (xmlString: string): Invoice | null => {
 
         return invoice;
     } catch (e) {
-        console.error("Failed to parse NFe XML", e);
+        console.error(`Failed to parse NFe XML ${fileName || ''}`, e);
         return null;
     }
 };

@@ -1,0 +1,914 @@
+[
+  {
+    "ncm": "2018",
+    "original_format": "2018",
+    "description": "quotas das bebidas frias (c",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "digos 411 a 434), para os fatos geradores a partir de 01/2018."
+  },
+  {
+    "ncm": "13097",
+    "original_format": "13.097",
+    "description": "OBS: A revenda a al",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "quota zero por PJ varejistas, nos termos do art. 28 da Lei 13.097/2015, deve ser escriturada com o c"
+  },
+  {
+    "ncm": "2015",
+    "original_format": "2015",
+    "description": "OBS: A revenda a al",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "quota zero por PJ varejistas, nos termos do art. 28 da Lei 13.097/2015, deve ser escriturada com o c"
+  },
+  {
+    "ncm": "2013",
+    "original_format": "2013",
+    "description": "quota zero",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "31/01/2013"
+  },
+  {
+    "ncm": "27101159",
+    "original_format": "2710.11.59",
+    "description": "Gasolinas, Exceto Gasolina de Avia",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "2710.11.59"
+  },
+  {
+    "ncm": "2011",
+    "original_format": "2011",
+    "description": "2710.11.59",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "31/12/2011"
+  },
+  {
+    "ncm": "27101259",
+    "original_format": "2710.12.59",
+    "description": "Gasolinas, Exceto Gasolina de Avia",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "2710.12.59"
+  },
+  {
+    "ncm": "27101921",
+    "original_format": "2710.19.21",
+    "description": "leo Diesel",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "2710.19.21"
+  },
+  {
+    "ncm": "27111910",
+    "original_format": "2711.19.10",
+    "description": "efeito de Petr",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "2711.19.10"
+  },
+  {
+    "ncm": "27101911",
+    "original_format": "2710.19.11",
+    "description": "Querosene de Avia",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "2710.19.11"
+  },
+  {
+    "ncm": "38249029",
+    "original_format": "3824.90.29",
+    "description": "Biodiesel",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "3824.90.29"
+  },
+  {
+    "ncm": "38260000",
+    "original_format": "3826.00.00",
+    "description": "Biodiesel",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "3826.00.00"
+  },
+  {
+    "ncm": "382600",
+    "original_format": "3826.00",
+    "description": "3826.00.00",
+    "is_prefix": true,
+    "has_exception": true,
+    "full_line": "3826.00.00Ex 01"
+  },
+  {
+    "ncm": "22071000",
+    "original_format": "2207.10.00",
+    "description": "Venda por Produtor ou Importador.",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "2207.10.00"
+  },
+  {
+    "ncm": "22072010",
+    "original_format": "2207.20.10",
+    "description": "2207.10.00",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "2207.20.10"
+  },
+  {
+    "ncm": "22089000",
+    "original_format": "2208.90.00",
+    "description": "2207.20.10",
+    "is_prefix": false,
+    "has_exception": true,
+    "full_line": "2208.90.00 Ex 01"
+  },
+  {
+    "ncm": "220710",
+    "original_format": "2207.10",
+    "description": "Venda por Produtor ou Importador.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "2207.10"
+  },
+  {
+    "ncm": "2207201",
+    "original_format": "2207.20.1",
+    "description": "2207.10",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "2207.20.1"
+  },
+  {
+    "ncm": "2025",
+    "original_format": "2025",
+    "description": "2208.90.00 Ex 01",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "30/04/2025"
+  },
+  {
+    "ncm": "2026",
+    "original_format": "2026",
+    "description": "vel - A partir de 1",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "de janeiro de 2026"
+  },
+  {
+    "ncm": "1997",
+    "original_format": "1997",
+    "description": "dicas de que tratam os incisos II e III do caput do art. 68-B da Lei n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "9.478, de 6 de agosto de 1997"
+  },
+  {
+    "ncm": "2021",
+    "original_format": "2021",
+    "description": "2208.90.00 Ex 01",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "01/12/2021"
+  },
+  {
+    "ncm": "2012",
+    "original_format": "2012",
+    "description": "s Centrais Petroqu",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "17/09/2012"
+  },
+  {
+    "ncm": "2016",
+    "original_format": "2016",
+    "description": "s Centrais Petroqu",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "01/01/2016"
+  },
+  {
+    "ncm": "2017",
+    "original_format": "2017",
+    "description": "s Centrais Petroqu",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "01/01/2017"
+  },
+  {
+    "ncm": "2022",
+    "original_format": "2022",
+    "description": "s Centrais Petroqu",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "01/01/2022"
+  },
+  {
+    "ncm": "2023",
+    "original_format": "2023",
+    "description": "s Centrais Petroqu",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "01/01/2023"
+  },
+  {
+    "ncm": "2024",
+    "original_format": "2024",
+    "description": "s Centrais Petroqu",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "01/01/2024"
+  },
+  {
+    "ncm": "2027",
+    "original_format": "2027",
+    "description": "01/01/2025",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "31/12/2027"
+  },
+  {
+    "ncm": "3001",
+    "original_format": "30.01",
+    "description": "uticos",
+    "is_prefix": true,
+    "has_exception": true,
+    "full_line": "30.01, 30.03 (exceto no c"
+  },
+  {
+    "ncm": "3003",
+    "original_format": "30.03",
+    "description": "uticos",
+    "is_prefix": true,
+    "has_exception": true,
+    "full_line": "30.01, 30.03 (exceto no c"
+  },
+  {
+    "ncm": "30039056",
+    "original_format": "3003.90.56",
+    "description": "30.01, 30.03 (exceto no c",
+    "is_prefix": false,
+    "has_exception": true,
+    "full_line": "digo 3003.90.56), 30.04 (exceto no c"
+  },
+  {
+    "ncm": "3004",
+    "original_format": "30.04",
+    "description": "30.01, 30.03 (exceto no c",
+    "is_prefix": true,
+    "has_exception": true,
+    "full_line": "digo 3003.90.56), 30.04 (exceto no c"
+  },
+  {
+    "ncm": "30049046",
+    "original_format": "3004.90.46",
+    "description": "digo 3003.90.56), 30.04 (exceto no c",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "digo 3004.90.46);"
+  },
+  {
+    "ncm": "3002101",
+    "original_format": "3002.10.1",
+    "description": "Itens:",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "3002.10.1, 3002.10.2, 3002.10.3, 3002.20.1, 3002.20.2, 3006.30.1 e 3006.30.2; e"
+  },
+  {
+    "ncm": "3002102",
+    "original_format": "3002.10.2",
+    "description": "Itens:",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "3002.10.1, 3002.10.2, 3002.10.3, 3002.20.1, 3002.20.2, 3006.30.1 e 3006.30.2; e"
+  },
+  {
+    "ncm": "3002103",
+    "original_format": "3002.10.3",
+    "description": "Itens:",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "3002.10.1, 3002.10.2, 3002.10.3, 3002.20.1, 3002.20.2, 3006.30.1 e 3006.30.2; e"
+  },
+  {
+    "ncm": "3002201",
+    "original_format": "3002.20.1",
+    "description": "Itens:",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "3002.10.1, 3002.10.2, 3002.10.3, 3002.20.1, 3002.20.2, 3006.30.1 e 3006.30.2; e"
+  },
+  {
+    "ncm": "3002202",
+    "original_format": "3002.20.2",
+    "description": "Itens:",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "3002.10.1, 3002.10.2, 3002.10.3, 3002.20.1, 3002.20.2, 3006.30.1 e 3006.30.2; e"
+  },
+  {
+    "ncm": "3006301",
+    "original_format": "3006.30.1",
+    "description": "Itens:",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "3002.10.1, 3002.10.2, 3002.10.3, 3002.20.1, 3002.20.2, 3006.30.1 e 3006.30.2; e"
+  },
+  {
+    "ncm": "3006302",
+    "original_format": "3006.30.2",
+    "description": "Itens:",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "3002.10.1, 3002.10.2, 3002.10.3, 3002.20.1, 3002.20.2, 3006.30.1 e 3006.30.2; e"
+  },
+  {
+    "ncm": "30029020",
+    "original_format": "3002.90.20",
+    "description": "digos:",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "3002.90.20, 3002.90.92, 3002.90.99, 3005.10.10 e 3006.60.00."
+  },
+  {
+    "ncm": "30029092",
+    "original_format": "3002.90.92",
+    "description": "digos:",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "3002.90.20, 3002.90.92, 3002.90.99, 3005.10.10 e 3006.60.00."
+  },
+  {
+    "ncm": "30029099",
+    "original_format": "3002.90.99",
+    "description": "digos:",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "3002.90.20, 3002.90.92, 3002.90.99, 3005.10.10 e 3006.60.00."
+  },
+  {
+    "ncm": "30051010",
+    "original_format": "3005.10.10",
+    "description": "digos:",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "3002.90.20, 3002.90.92, 3002.90.99, 3005.10.10 e 3006.60.00."
+  },
+  {
+    "ncm": "30066000",
+    "original_format": "3006.60.00",
+    "description": "digos:",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "3002.90.20, 3002.90.92, 3002.90.99, 3005.10.10 e 3006.60.00."
+  },
+  {
+    "ncm": "3303",
+    "original_format": "33.03",
+    "description": "Produtos de Perfumaria, de Toucador ou de Higiene Pessoal.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "33.03 a 33.07;"
+  },
+  {
+    "ncm": "3307",
+    "original_format": "33.07",
+    "description": "Produtos de Perfumaria, de Toucador ou de Higiene Pessoal.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "33.03 a 33.07;"
+  },
+  {
+    "ncm": "34011190",
+    "original_format": "3401.11.90",
+    "description": "digos:",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "3401.11.90, 3401.20.10 e 96.03.21.00."
+  },
+  {
+    "ncm": "34012010",
+    "original_format": "3401.20.10",
+    "description": "digos:",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "3401.11.90, 3401.20.10 e 96.03.21.00."
+  },
+  {
+    "ncm": "960321",
+    "original_format": "96.03.21",
+    "description": "digos:",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "3401.11.90, 3401.20.10 e 96.03.21.00."
+  },
+  {
+    "ncm": "3304",
+    "original_format": "33.04",
+    "description": "Produtos de Perfumaria, de Toucador ou de Higiene Pessoal.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "33.03, 33.04, 33.05 e 33.07;"
+  },
+  {
+    "ncm": "3305",
+    "original_format": "33.05",
+    "description": "Produtos de Perfumaria, de Toucador ou de Higiene Pessoal.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "33.03, 33.04, 33.05 e 33.07;"
+  },
+  {
+    "ncm": "8429",
+    "original_format": "84.29",
+    "description": "tulo 84 da TIPI, aplica-se exclusivamente aos produtos autopropulsados.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "84.29, 8432.40.00, 84.32.80.00, 8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e 87.06"
+  },
+  {
+    "ncm": "84324000",
+    "original_format": "8432.40.00",
+    "description": "tulo 84 da TIPI, aplica-se exclusivamente aos produtos autopropulsados.",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "84.29, 8432.40.00, 84.32.80.00, 8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e 87.06"
+  },
+  {
+    "ncm": "843280",
+    "original_format": "84.32.80",
+    "description": "tulo 84 da TIPI, aplica-se exclusivamente aos produtos autopropulsados.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "84.29, 8432.40.00, 84.32.80.00, 8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e 87.06"
+  },
+  {
+    "ncm": "843320",
+    "original_format": "8433.20",
+    "description": "tulo 84 da TIPI, aplica-se exclusivamente aos produtos autopropulsados.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "84.29, 8432.40.00, 84.32.80.00, 8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e 87.06"
+  },
+  {
+    "ncm": "84333000",
+    "original_format": "8433.30.00",
+    "description": "tulo 84 da TIPI, aplica-se exclusivamente aos produtos autopropulsados.",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "84.29, 8432.40.00, 84.32.80.00, 8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e 87.06"
+  },
+  {
+    "ncm": "84334000",
+    "original_format": "8433.40.00",
+    "description": "tulo 84 da TIPI, aplica-se exclusivamente aos produtos autopropulsados.",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "84.29, 8432.40.00, 84.32.80.00, 8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e 87.06"
+  },
+  {
+    "ncm": "84335",
+    "original_format": "8433.5",
+    "description": "tulo 84 da TIPI, aplica-se exclusivamente aos produtos autopropulsados.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "84.29, 8432.40.00, 84.32.80.00, 8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e 87.06"
+  },
+  {
+    "ncm": "8701",
+    "original_format": "87.01",
+    "description": "tulo 84 da TIPI, aplica-se exclusivamente aos produtos autopropulsados.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "84.29, 8432.40.00, 84.32.80.00, 8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e 87.06"
+  },
+  {
+    "ncm": "8702",
+    "original_format": "87.02",
+    "description": "tulo 84 da TIPI, aplica-se exclusivamente aos produtos autopropulsados.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "84.29, 8432.40.00, 84.32.80.00, 8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e 87.06"
+  },
+  {
+    "ncm": "8703",
+    "original_format": "87.03",
+    "description": "tulo 84 da TIPI, aplica-se exclusivamente aos produtos autopropulsados.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "84.29, 8432.40.00, 84.32.80.00, 8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e 87.06"
+  },
+  {
+    "ncm": "8704",
+    "original_format": "87.04",
+    "description": "tulo 84 da TIPI, aplica-se exclusivamente aos produtos autopropulsados.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "84.29, 8432.40.00, 84.32.80.00, 8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e 87.06"
+  },
+  {
+    "ncm": "8705",
+    "original_format": "87.05",
+    "description": "tulo 84 da TIPI, aplica-se exclusivamente aos produtos autopropulsados.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "84.29, 8432.40.00, 84.32.80.00, 8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e 87.06"
+  },
+  {
+    "ncm": "8706",
+    "original_format": "87.06",
+    "description": "tulo 84 da TIPI, aplica-se exclusivamente aos produtos autopropulsados.",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "84.29, 8432.40.00, 84.32.80.00, 8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e 87.06"
+  },
+  {
+    "ncm": "2014",
+    "original_format": "2014",
+    "description": "84.29, 8432.40.00, 84.32.80.00, 8433.20, 8433.30.00, 8433.40.00, 8433.5, 87.01, 87.02, 87.03, 87.04, 87.05 e 87.06",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "13/05/2014"
+  },
+  {
+    "ncm": "7309",
+    "original_format": "73.09",
+    "description": "tulo 84 da TIPI, aplica-se aos produtos autopropulsados ou n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "73.09, 7310.29, 7612.90.12, 8424.81, 84.29, 8430.69.90, 84.32, 84.33, 84.34, 84.35, 84.36, 84.37, 87.01, 87.02, 87.03, 87.04, 87.05, 87.06 e 8716.20.00"
+  },
+  {
+    "ncm": "731029",
+    "original_format": "7310.29",
+    "description": "tulo 84 da TIPI, aplica-se aos produtos autopropulsados ou n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "73.09, 7310.29, 7612.90.12, 8424.81, 84.29, 8430.69.90, 84.32, 84.33, 84.34, 84.35, 84.36, 84.37, 87.01, 87.02, 87.03, 87.04, 87.05, 87.06 e 8716.20.00"
+  },
+  {
+    "ncm": "76129012",
+    "original_format": "7612.90.12",
+    "description": "tulo 84 da TIPI, aplica-se aos produtos autopropulsados ou n",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "73.09, 7310.29, 7612.90.12, 8424.81, 84.29, 8430.69.90, 84.32, 84.33, 84.34, 84.35, 84.36, 84.37, 87.01, 87.02, 87.03, 87.04, 87.05, 87.06 e 8716.20.00"
+  },
+  {
+    "ncm": "842481",
+    "original_format": "8424.81",
+    "description": "tulo 84 da TIPI, aplica-se aos produtos autopropulsados ou n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "73.09, 7310.29, 7612.90.12, 8424.81, 84.29, 8430.69.90, 84.32, 84.33, 84.34, 84.35, 84.36, 84.37, 87.01, 87.02, 87.03, 87.04, 87.05, 87.06 e 8716.20.00"
+  },
+  {
+    "ncm": "84306990",
+    "original_format": "8430.69.90",
+    "description": "tulo 84 da TIPI, aplica-se aos produtos autopropulsados ou n",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "73.09, 7310.29, 7612.90.12, 8424.81, 84.29, 8430.69.90, 84.32, 84.33, 84.34, 84.35, 84.36, 84.37, 87.01, 87.02, 87.03, 87.04, 87.05, 87.06 e 8716.20.00"
+  },
+  {
+    "ncm": "8432",
+    "original_format": "84.32",
+    "description": "tulo 84 da TIPI, aplica-se aos produtos autopropulsados ou n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "73.09, 7310.29, 7612.90.12, 8424.81, 84.29, 8430.69.90, 84.32, 84.33, 84.34, 84.35, 84.36, 84.37, 87.01, 87.02, 87.03, 87.04, 87.05, 87.06 e 8716.20.00"
+  },
+  {
+    "ncm": "8433",
+    "original_format": "84.33",
+    "description": "tulo 84 da TIPI, aplica-se aos produtos autopropulsados ou n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "73.09, 7310.29, 7612.90.12, 8424.81, 84.29, 8430.69.90, 84.32, 84.33, 84.34, 84.35, 84.36, 84.37, 87.01, 87.02, 87.03, 87.04, 87.05, 87.06 e 8716.20.00"
+  },
+  {
+    "ncm": "8434",
+    "original_format": "84.34",
+    "description": "tulo 84 da TIPI, aplica-se aos produtos autopropulsados ou n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "73.09, 7310.29, 7612.90.12, 8424.81, 84.29, 8430.69.90, 84.32, 84.33, 84.34, 84.35, 84.36, 84.37, 87.01, 87.02, 87.03, 87.04, 87.05, 87.06 e 8716.20.00"
+  },
+  {
+    "ncm": "8435",
+    "original_format": "84.35",
+    "description": "tulo 84 da TIPI, aplica-se aos produtos autopropulsados ou n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "73.09, 7310.29, 7612.90.12, 8424.81, 84.29, 8430.69.90, 84.32, 84.33, 84.34, 84.35, 84.36, 84.37, 87.01, 87.02, 87.03, 87.04, 87.05, 87.06 e 8716.20.00"
+  },
+  {
+    "ncm": "8436",
+    "original_format": "84.36",
+    "description": "tulo 84 da TIPI, aplica-se aos produtos autopropulsados ou n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "73.09, 7310.29, 7612.90.12, 8424.81, 84.29, 8430.69.90, 84.32, 84.33, 84.34, 84.35, 84.36, 84.37, 87.01, 87.02, 87.03, 87.04, 87.05, 87.06 e 8716.20.00"
+  },
+  {
+    "ncm": "8437",
+    "original_format": "84.37",
+    "description": "tulo 84 da TIPI, aplica-se aos produtos autopropulsados ou n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "73.09, 7310.29, 7612.90.12, 8424.81, 84.29, 8430.69.90, 84.32, 84.33, 84.34, 84.35, 84.36, 84.37, 87.01, 87.02, 87.03, 87.04, 87.05, 87.06 e 8716.20.00"
+  },
+  {
+    "ncm": "87162000",
+    "original_format": "8716.20.00",
+    "description": "tulo 84 da TIPI, aplica-se aos produtos autopropulsados ou n",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "73.09, 7310.29, 7612.90.12, 8424.81, 84.29, 8430.69.90, 84.32, 84.33, 84.34, 84.35, 84.36, 84.37, 87.01, 87.02, 87.03, 87.04, 87.05, 87.06 e 8716.20.00"
+  },
+  {
+    "ncm": "10485",
+    "original_format": "10.485",
+    "description": "Anexos I e II da Lei n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "10.485/02"
+  },
+  {
+    "ncm": "4011",
+    "original_format": "40.11",
+    "description": "maras-de-Ar)",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "40.11 e 40.13"
+  },
+  {
+    "ncm": "4013",
+    "original_format": "40.13",
+    "description": "maras-de-Ar)",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "40.11 e 40.13"
+  },
+  {
+    "ncm": "30042015",
+    "original_format": "30.04.2015",
+    "description": "veis para os fatos geradores at",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "30.04.2015"
+  },
+  {
+    "ncm": "22011000",
+    "original_format": "2201.10.00",
+    "description": "guas Gaseificadas Artificiais",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "2201.10.00"
+  },
+  {
+    "ncm": "01052015",
+    "original_format": "01.05.2015",
+    "description": "Nova tributa",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "o para os fatos geradores a partir de 01.05.2015 (Art. 25, 26 e 34 c/c Anexo III da Lei n"
+  },
+  {
+    "ncm": "210690",
+    "original_format": "21.06.90",
+    "description": "Vendas a PJ varejista ou consumidor final",
+    "is_prefix": true,
+    "has_exception": true,
+    "full_line": "21.06.90.10 Ex 02"
+  },
+  {
+    "ncm": "2201",
+    "original_format": "22.01",
+    "description": "Vendas a PJ varejista ou consumidor final",
+    "is_prefix": true,
+    "has_exception": true,
+    "full_line": "22.01, exceto os Ex 01 e Ex 02 do c"
+  },
+  {
+    "ncm": "220110",
+    "original_format": "22.01.10",
+    "description": "22.01, exceto os Ex 01 e Ex 02 do c",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "digo 22.01.10.00"
+  },
+  {
+    "ncm": "2009",
+    "original_format": "20.09",
+    "description": "colas, da posi",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "o 20.09"
+  },
+  {
+    "ncm": "2202",
+    "original_format": "22.02",
+    "description": "Vendas a PJ varejista ou consumidor final",
+    "is_prefix": true,
+    "has_exception": true,
+    "full_line": "22.02, exceto os Ex 01 e Ex 02 do c"
+  },
+  {
+    "ncm": "220290",
+    "original_format": "22.02.90",
+    "description": "22.02, exceto os Ex 01 e Ex 02 do c",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "digo 22.02.90.00"
+  },
+  {
+    "ncm": "2203",
+    "original_format": "22.03",
+    "description": "Vendas a PJ varejista ou consumidor final",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "22.03"
+  },
+  {
+    "ncm": "000000",
+    "original_format": "000.000",
+    "description": "dica com volume total de produ",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "5.000.000 de litros, no ano-calend"
+  },
+  {
+    "ncm": "10000000",
+    "original_format": "10.000.000",
+    "description": "o acima de 5.000.000 e at",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "10.000.000 de litros, no ano-calend"
+  },
+  {
+    "ncm": "01012016",
+    "original_format": "01.01.2016",
+    "description": "quotas aplic",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "veis para os fatos geradores de 01.01.2016 a 31.12.2017, conforme art. 34 e Anexo III da Lei n"
+  },
+  {
+    "ncm": "31122017",
+    "original_format": "31.12.2017",
+    "description": "quotas aplic",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "veis para os fatos geradores de 01.01.2016 a 31.12.2017, conforme art. 34 e Anexo III da Lei n"
+  },
+  {
+    "ncm": "01012017",
+    "original_format": "01.01.2017",
+    "description": "quotas aplic",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "veis para os fatos geradores de 01.01.2017 a 31.12.2017, conforme art. 3"
+  },
+  {
+    "ncm": "08032016",
+    "original_format": "08.03.2016",
+    "description": "694, de 2015, cuja vig",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "ncia expirou em 08.03.2016, conforme Ato Declarat"
+  },
+  {
+    "ncm": "10560",
+    "original_format": "10.560",
+    "description": "da Lei n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "10.560/02;"
+  },
+  {
+    "ncm": "10336",
+    "original_format": "10.336",
+    "description": "digos 107 e 108: art. 14 da Lei n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "10.336/01;"
+  },
+  {
+    "ncm": "11116",
+    "original_format": "11.116",
+    "description": "da Lei n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "11.116/05;"
+  },
+  {
+    "ncm": "12525",
+    "original_format": "12.525",
+    "description": ", inciso I, do Decreto n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "12.525, de 24 de junho de 2025."
+  },
+  {
+    "ncm": "1998",
+    "original_format": "1998",
+    "description": "da Lei n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "9.718, de 1998, revogado pelo LC/214/2025."
+  },
+  {
+    "ncm": "11196",
+    "original_format": "11.196",
+    "description": "digos 150, 151 e 152: art. 56 da Lei n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "11.196/05, atualizado pela MP n"
+  },
+  {
+    "ncm": "10147",
+    "original_format": "10.147",
+    "description": "da Lei n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "10.147/00;"
+  },
+  {
+    "ncm": "12973",
+    "original_format": "12.973",
+    "description": "o dada pelo art. 103 da Lei n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "12.973/2014;"
+  },
+  {
+    "ncm": "10833",
+    "original_format": "10.833",
+    "description": "digos 401, 403, 404, 405, 406 e 407: Art. 58-I da Lei n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "10.833/03;"
+  },
+  {
+    "ncm": "12715",
+    "original_format": "12.715",
+    "description": "10.833/03 c/c art. 76 da Lei n",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "12.715, de 2012;"
+  },
+  {
+    "ncm": "02072025",
+    "original_format": "02.07.2025",
+    "description": "Tabela 4.3.10 - vers",
+    "is_prefix": false,
+    "has_exception": false,
+    "full_line": "o 1.24: Atualizada em 02.07.2025"
+  },
+  {
+    "ncm": "2006",
+    "original_format": "2006",
+    "description": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "<a:clrMap xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" bg1=\"lt1\" tx1=\"dk1\" bg2=\"lt2\" tx2=\"dk2\" accent1=\"accent1\" accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" accent6=\"accent6\" hlink=\"hlink\" folHlink=\"folHlink\"/>"
+  },
+  {
+    "ncm": "4540",
+    "original_format": "4540",
+    "description": "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "<ds:datastoreItem ds:itemID=\"{64EA769E-4540-44FF-BA50-675A0B94DDFE}\" xmlns:ds=\"http://schemas.openxmlformats.org/officeDocument/2006/customXml\"><ds:schemaRefs><ds:schemaRef ds:uri=\"http://schemas.microsoft.com/office/2006/metadata/contentType\"/><ds:schemaRef ds:uri=\"http://schemas.microsoft.com/office/2006/metadata/properties/"
+  },
+  {
+    "ncm": "2001",
+    "original_format": "2001",
+    "description": "<?xml version=\"1.0\" encoding=\"utf-8\"?><ct:contentTypeSchema ct:_=\"\" ma:_=\"\" ma:contentTypeName=\"Documento\" ma:contentTypeID=\"0x010100A49949FEAC7A6842A1539AC02FA193FF\" ma:contentTypeVersion=\"4\" ma:contentTypeDescription=\"Crie um novo documento.\" ma:contentTypeScope=\"\" ma:versionID=\"0002bd8e7e669d1adb1d07686ef38726\" xmlns:ct=\"http://schemas.microsoft.com/office/2006/metadata/contentType\" xmlns:ma=\"http://schemas.microsoft.com/office/2006/metadata/properties/metaAttributes\">",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "<xsd:schema targetNamespace=\"http://schemas.microsoft.com/office/2006/metadata/properties\" ma:root=\"true\" ma:fieldsID=\"4c7af51476f0a356756675c77c024161\" ns2:_=\"\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:p=\"http://schemas.microsoft.com/office/2006/metadata/properties\" xmlns:ns2=\"d4bd1724-8d68-4fe0-b9b1-65acb4b63233\">"
+  },
+  {
+    "ncm": "2007",
+    "original_format": "2007",
+    "description": "</xsd:schema>",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "<xsd:schema targetNamespace=\"d4bd1724-8d68-4fe0-b9b1-65acb4b63233\" elementFormDefault=\"qualified\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:dms=\"http://schemas.microsoft.com/office/2006/documentManagement/types\" xmlns:pc=\"http://schemas.microsoft.com/office/infopath/2007/PartnerControls\">"
+  },
+  {
+    "ncm": "2003",
+    "original_format": "2003",
+    "description": "<xsd:schema targetNamespace=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" elementFormDefault=\"qualified\" attributeFormDefault=\"unqualified\" blockDefault=\"#all\" xmlns=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:odoc=\"http://schemas.microsoft.com/internal/obd\">",
+    "is_prefix": true,
+    "has_exception": false,
+    "full_line": "<xsd:import namespace=\"http://purl.org/dc/elements/1.1/\" schemaLocation=\"http://dublincore.org/schemas/xmls/qdc/2003/04/02/dc.xsd\"/>"
+  }
+]

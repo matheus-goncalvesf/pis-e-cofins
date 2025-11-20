@@ -1,146 +1,136 @@
-// CompanyManager.tsx — versão corrigida
-
 import React, { useState } from 'react';
 import { Company } from '../types';
-import { LogoIcon, TrashIcon } from './icons';
+import { Building2, Plus, ArrowRight, Trash2 } from 'lucide-react';
+import { Button } from './ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 
-interface Props {
+interface CompanyManagerProps {
   companies: Company[];
-  onSelectCompany: (companyId: string) => void;
-  onAddCompany: (company: Company) => void;
-  onDeleteCompany: (companyId: string) => void;
+  onSelectCompany: (id: number) => void;
+  onCreateCompany: (company: Omit<Company, 'id' | 'created_at'>) => void;
+  onDeleteCompany: (id: number) => void;
 }
 
-const CompanyManager: React.FC<Props> = ({ companies, onSelectCompany, onAddCompany, onDeleteCompany }) => {
-  const [showForm, setShowForm] = useState(false);
-  const [name, setName] = useState('');
-  const [cnpj, setCnpj] = useState('');
+const CompanyManager: React.FC<CompanyManagerProps> = ({ companies, onSelectCompany, onCreateCompany, onDeleteCompany }) => {
+  const [isAdding, setIsAdding] = useState(false);
+  const [newCompanyName, setNewCompanyName] = useState('');
+  const [newCompanyCNPJ, setNewCompanyCNPJ] = useState('');
 
-  const handleAdd = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name && cnpj) {
-      const newCompany: Company = {
-        id: `comp_${Date.now()}`,
-        name,
-        cnpj
-      };
-      onAddCompany(newCompany);
-      setName('');
-      setCnpj('');
-      setShowForm(false);
+    if (newCompanyName && newCompanyCNPJ) {
+      // Actually, looking at the props: onCreateCompany: (company: Omit<Company, 'id' | 'created_at'>) => void;
+      // So we should NOT pass ID.
+      onCreateCompany({
+        name: newCompanyName,
+        cnpj: newCompanyCNPJ,
+      });
+
+      setNewCompanyName('');
+      setNewCompanyCNPJ('');
+      setIsAdding(false);
     }
-  };
-  
-  const handleCardClick = (companyId: string) => {
-      onSelectCompany(companyId);
-  };
-
-  const handleDeleteClick = (e: React.MouseEvent, companyId: string) => {
-      e.stopPropagation();
-      e.preventDefault();
-
-      if (window.confirm('Tem certeza que deseja excluir esta empresa? Todos os dados e apurações serão perdidos permanentemente.')) {
-          onDeleteCompany(companyId);
-      }
-  };
-
-  const formatCnpj = (value: string) => {
-    return value
-      .replace(/\D/g, '')
-      .replace(/^(\d{2})(\d)/, '$1.$2')
-      .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
-      .replace(/\.(\d{3})(\d)/, '.$1/$2')
-      .replace(/(\d{4})(\d)/, '$1-$2')
-      .substring(0, 18);
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-      <div className="max-w-4xl w-full mx-auto">
-        <div className="flex justify-center items-center mb-8">
-            <LogoIcon />
-            <h1 className="text-3xl font-bold text-gray-800 ml-3">Recupera PIS/COFINS</h1>
-        </div>
-        
-        <div className="bg-white p-8 rounded-xl shadow-lg">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-700">Selecione uma Empresa</h2>
-            <button
-              type="button"
-              onClick={() => setShowForm(!showForm)}
-              className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-            >
-              {showForm ? 'Cancelar' : '+ Nova Empresa'}
-            </button>
-          </div>
-
-          {showForm && (
-            <form onSubmit={handleAdd} className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="company_name" className="block text-sm font-medium text-gray-700">Nome da Empresa</label>
-                  <input
-                    type="text"
-                    id="company_name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="company_cnpj" className="block text-sm font-medium text-gray-700">CNPJ</label>
-                  <input
-                    type="text"
-                    id="company_cnpj"
-                    value={cnpj}
-                    onChange={(e) => setCnpj(formatCnpj(e.target.value))}
-                    className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="00.000.000/0001-00"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="text-right mt-4">
-                <button type="submit" className="px-5 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-colors">
-                  Salvar Empresa
-                </button>
-              </div>
-            </form>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {companies.map(company => (
-              <div 
-                key={company.id} 
-                className="relative p-6 border border-gray-200 rounded-lg hover:shadow-md transition-shadow bg-white group cursor-pointer" 
-                onClick={() => handleCardClick(company.id)}
-              >
-                <button 
-                    type="button"
-                    onClick={() => onDeleteCompany(company.id)}
-                    className="absolute top-3 right-3 w-9 h-9 flex items-center justify-center bg-white border border-gray-200 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all shadow-sm z-50 hover:scale-110"
-                    title="Excluir empresa"
-                >
-                   <TrashIcon />
-                </button>
-
-                <h3 className="text-lg font-bold text-gray-800 truncate pr-6">{company.name}</h3>
-                <p className="text-gray-500 font-mono my-2">{company.cnpj}</p>
-                <div className="mt-4 text-blue-600 font-semibold text-sm">
-                  Clique para selecionar
-                </div>
-              </div>
-            ))}
-             {companies.length === 0 && !showForm && (
-                <div className="col-span-full text-center py-8 text-gray-500">
-                    <p>Nenhuma empresa cadastrada.</p>
-                    <p>Clique em "+ Nova Empresa" para começar.</p>
-                </div>
+    <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
+      <Card className="w-full max-w-3xl shadow-lg">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <Building2 className="h-6 w-6 text-primary" />
+                Gerenciamento de Empresas
+              </CardTitle>
+              <CardDescription>Selecione uma empresa para iniciar ou cadastre uma nova.</CardDescription>
+            </div>
+            {!isAdding && (
+              <Button onClick={() => setIsAdding(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Nova Empresa
+              </Button>
             )}
           </div>
-        </div>
-      </div>
+        </CardHeader>
+        <CardContent>
+          {isAdding ? (
+            <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg bg-secondary/20 animate-in fade-in slide-in-from-top-2">
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <label htmlFor="name" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Nome da Empresa</label>
+                  <input
+                    id="name"
+                    type="text"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Ex: Minha Loja LTDA"
+                    value={newCompanyName}
+                    onChange={(e) => setNewCompanyName(e.target.value)}
+                    required
+                    autoFocus
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <label htmlFor="cnpj" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">CNPJ</label>
+                  <input
+                    id="cnpj"
+                    type="text"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="00.000.000/0000-00"
+                    value={newCompanyCNPJ}
+                    onChange={(e) => setNewCompanyCNPJ(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 mt-4">
+                <Button type="button" variant="ghost" onClick={() => setIsAdding(false)}>Cancelar</Button>
+                <Button type="submit">Cadastrar Empresa</Button>
+              </div>
+            </form>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2">
+              {companies.length === 0 ? (
+                <div className="col-span-2 text-center py-12 text-muted-foreground">
+                  Nenhuma empresa cadastrada. Clique em "Nova Empresa" para começar.
+                </div>
+              ) : (
+                companies.map((company) => (
+                  <div
+                    key={company.id}
+                    className="group flex flex-col justify-between rounded-lg border p-4 hover:bg-secondary/50 hover:border-primary/50 transition-all cursor-pointer relative"
+                    onClick={() => onSelectCompany(company.id)}
+                  >
+                    <div className="space-y-1">
+                      <h3 className="font-semibold leading-none tracking-tight text-lg group-hover:text-primary transition-colors">{company.name}</h3>
+                      <p className="text-sm text-muted-foreground">{company.cnpj}</p>
+                    </div>
+
+                    <div className="flex items-center justify-between mt-4">
+                      <span className="text-xs text-muted-foreground">Criada em {new Date(company.created_at).toLocaleDateString()}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive z-10"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (window.confirm('Tem certeza que deseja excluir esta empresa?')) {
+                            onDeleteCompany(company.id);
+                          }
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowRight className="h-5 w-5 text-primary" />
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
