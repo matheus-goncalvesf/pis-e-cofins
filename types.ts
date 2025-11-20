@@ -47,6 +47,7 @@ export interface CalculationInput {
   das_paid?: number;
   anexo?: AnexoType;
   rbt12?: number; // Receita Bruta Total dos últimos 12 meses
+  includeInReport?: boolean; // Flag to include/exclude month from reports
 }
 
 

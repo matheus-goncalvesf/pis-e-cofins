@@ -27,12 +27,31 @@ export class PisCofinsDb extends Dexie {
     calculations!: Table<CalculationInputEntity, [number, string]>; // Compound key: [companyId, competence_month]
 
     constructor() {
-        super('PisCofinsDb_v2');
+        super('PisCofinsDb_v3');
+
+        // Version 1: Initial schema
         this.version(1).stores({
             companies: '++id',
             invoices: '++id, companyId, issue_date',
             files: '++id, companyId',
             calculations: '[companyId+competence_month]'
+        });
+
+        // Version 2: Add includeInReport field (migration handled automatically by Dexie)
+        this.version(2).stores({
+            companies: '++id',
+            invoices: '++id, companyId, issue_date',
+            files: '++id, companyId',
+            calculations: '[companyId+competence_month]'
+        }).upgrade(async tx => {
+            // Set includeInReport to true for existing records with complete data
+            const calculations = await tx.table('calculations').toArray();
+            for (const calc of calculations) {
+                const isComplete = !!(calc.anexo && calc.rbt12 && calc.das_paid);
+                await tx.table('calculations').update([calc.companyId, calc.competence_month], {
+                    includeInReport: isComplete
+                });
+            }
         });
     }
 }

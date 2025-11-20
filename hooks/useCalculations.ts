@@ -19,7 +19,7 @@ export function useCalculations(invoices: Invoice[], calculationInputs: Record<s
 
     invoices.forEach(invoice => {
       const month = invoice.issue_date.slice(0, 7); // YYYY-MM
-      
+
       invoice.items.forEach(item => {
         // Apenas considera itens cuja operação (CFOP) representa uma venda geradora de receita.
         if (VALID_SALES_CFOPS.has(item.cfop)) {
@@ -35,6 +35,11 @@ export function useCalculations(invoices: Invoice[], calculationInputs: Record<s
     });
 
     return Object.entries(monthlyData)
+      .filter(([month]) => {
+        // Only include months where includeInReport is not explicitly false
+        const userInput = calculationInputs[month];
+        return userInput?.includeInReport !== false;
+      })
       .map(([month, data]) => {
         const userInput = calculationInputs[month];
         const dasPaid = userInput?.das_paid ?? 0;
@@ -42,27 +47,27 @@ export function useCalculations(invoices: Invoice[], calculationInputs: Record<s
         const rbt12 = userInput?.rbt12 ?? 0;
 
         const baseResult = {
-            competence_month: month,
-            total_revenue: data.total_revenue,
-            monofasico_revenue: data.monofasico_revenue,
-            das_paid: dasPaid,
-            anexo_used: anexo ? simplesNacionalTables[anexo]?.nome ?? anexo : 'N/A',
-            effective_aliquot: 0,
-            pis_cofins_share: 0,
-            recalculated_das_due: dasPaid,
-            credit_amount: 0,
+          competence_month: month,
+          total_revenue: data.total_revenue,
+          monofasico_revenue: data.monofasico_revenue,
+          das_paid: dasPaid,
+          anexo_used: anexo ? simplesNacionalTables[anexo]?.nome ?? anexo : 'N/A',
+          effective_aliquot: 0,
+          pis_cofins_share: 0,
+          recalculated_das_due: dasPaid,
+          credit_amount: 0,
         };
 
         // Validações básicas
         if (!anexo || dasPaid <= 0 || data.total_revenue <= 0) {
           return baseResult;
         }
-        
+
         // 1. Encontrar a faixa correta no Anexo selecionado baseada no RBT12
         const faixa = findFaixa(anexo, rbt12);
-        
+
         if (!faixa) {
-             return baseResult;
+          return baseResult;
         }
 
         // 2. Calcular a Alíquota Efetiva REAL (Baseada no pagamento realizado)
@@ -73,7 +78,7 @@ export function useCalculations(invoices: Invoice[], calculationInputs: Record<s
         // Proteção extra contra chaves indefinidas
         const partilhaPis = faixa.partilha['PIS/Pasep'] ?? 0;
         const partilhaCofins = faixa.partilha['COFINS'] ?? 0;
-        
+
         const somaPartilhaPisCofins = partilhaPis + partilhaCofins;
 
         // 4. Calcular a Alíquota Incidente de PIS/COFINS
@@ -83,13 +88,13 @@ export function useCalculations(invoices: Invoice[], calculationInputs: Record<s
         // 5. Calcular o Crédito
         // O crédito é o valor pago indevidamente sobre a receita monofásica.
         const creditAmount = data.monofasico_revenue * aliquotaPisCofinsIncidente;
-        
+
         // 6. Novo DAS Devido (Segregação de Receitas)
         const recalculatedDasDue = dasPaid - creditAmount;
 
         return {
           ...baseResult,
-          effective_aliquot: realEffectiveAliquot, 
+          effective_aliquot: realEffectiveAliquot,
           pis_cofins_share: somaPartilhaPisCofins,
           recalculated_das_due: recalculatedDasDue > 0 ? recalculatedDasDue : 0,
           credit_amount: creditAmount > 0 ? creditAmount : 0,

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Company, Invoice, CalculationInput } from '../types';
 import { useCalculations } from '../hooks/useCalculations';
 import BuiltInReport from './BuiltInReport';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
-import { FileSpreadsheet, FileText, Loader2, BarChart3 } from 'lucide-react';
+import { FileSpreadsheet, FileText, Loader2, BarChart3, AlertCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader } from './ui/card';
 
@@ -26,6 +26,31 @@ const ReportsGenerator: React.FC<ReportsGeneratorProps> = ({ company, invoices, 
     const [currentView, setCurrentView] = useState<ReportView>('monthly');
 
     const calculations = useCalculations(invoices, calculationInputs);
+
+    // Calculate excluded and incomplete months
+    const allMonths = useMemo(() => {
+        const months = new Set<string>();
+        invoices.forEach(inv => {
+            const month = inv.issue_date.slice(0, 7);
+            months.add(month);
+        });
+        return Array.from(months).sort();
+    }, [invoices]);
+
+    const excludedMonths = useMemo(() => {
+        return allMonths.filter((month: string) => {
+            const input = calculationInputs[month];
+            return input?.includeInReport === false;
+        });
+    }, [allMonths, calculationInputs]);
+
+    const incompleteMonths = useMemo(() => {
+        return calculations.filter(calc => {
+            const input = calculationInputs[calc.competence_month];
+            const isComplete = !!(input?.anexo && input?.rbt12 && input?.das_paid);
+            return !isComplete;
+        }).map(calc => calc.competence_month);
+    }, [calculations, calculationInputs]);
 
     const handleGenerateReport = (format: 'Excel' | 'PDF') => {
         if (calculations.length === 0) {
@@ -138,6 +163,26 @@ const ReportsGenerator: React.FC<ReportsGeneratorProps> = ({ company, invoices, 
                     <p className="mt-1 text-muted-foreground">Analise os resultados e exporte os dados consolidados.</p>
                 </div>
             </div>
+
+            {/* Warning Banner for Excluded/Incomplete Months */}
+            {(excludedMonths.length > 0 || incompleteMonths.length > 0) && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3">
+                    <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                        <h3 className="font-semibold text-amber-900 mb-1">Atenção: Dados Parciais no Relatório</h3>
+                        {excludedMonths.length > 0 && (
+                            <p className="text-sm text-amber-800 mb-1">
+                                <strong>{excludedMonths.length} {excludedMonths.length === 1 ? 'mês excluído' : 'meses excluídos'}:</strong> {excludedMonths.join(', ')}
+                            </p>
+                        )}
+                        {incompleteMonths.length > 0 && (
+                            <p className="text-sm text-amber-800">
+                                <strong>{incompleteMonths.length} {incompleteMonths.length === 1 ? 'mês com dados incompletos' : 'meses com dados incompletos'}:</strong> {incompleteMonths.join(', ')}
+                            </p>
+                        )}
+                    </div>
+                </div>
+            )}
 
             <Card>
                 <CardHeader className="pb-4">

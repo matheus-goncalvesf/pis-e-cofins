@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Invoice, CalculationInput, AnexoType } from '../types';
-import { Save, Calculator } from 'lucide-react';
+import { Save, Calculator, AlertCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { Input } from './ui/input';
@@ -129,6 +129,57 @@ const CalculationsInput: React.FC<CalculationsInputProps> = ({ invoices, initial
     }
   };
 
+  const isMonthDataComplete = (month: string): boolean => {
+    const data = inputs[month];
+    return !!(data?.anexo && data?.rbt12 && data?.das_paid);
+  };
+
+  const getMissingFields = (month: string): string[] => {
+    const data = inputs[month];
+    const missing: string[] = [];
+    if (!data?.anexo) missing.push('Anexo');
+    if (!data?.rbt12) missing.push('RBT12');
+    if (!data?.das_paid) missing.push('DAS Pago');
+    return missing;
+  };
+
+  const handleToggleIncludeInReport = (month: string) => {
+    setInputs(prev => ({
+      ...prev,
+      [month]: {
+        ...prev[month],
+        includeInReport: !(prev[month]?.includeInReport ?? true)
+      }
+    }));
+  };
+
+  // Auto-update includeInReport based on data completeness
+  useEffect(() => {
+    setInputs(prev => {
+      const next = { ...prev };
+      monthlyRevenues.forEach(({ month }) => {
+        const isComplete = isMonthDataComplete(month);
+        const currentValue = next[month]?.includeInReport;
+
+        // Only auto-set if not explicitly set by user
+        // If data becomes complete and wasn't included, keep it unchecked (user choice)
+        // If data becomes incomplete, auto-uncheck
+        if (!isComplete && currentValue !== false) {
+          next[month] = {
+            ...next[month],
+            includeInReport: false
+          };
+        } else if (isComplete && currentValue === undefined) {
+          next[month] = {
+            ...next[month],
+            includeInReport: true
+          };
+        }
+      });
+      return next;
+    });
+  }, [inputs, monthlyRevenues]);
+
   const handleSave = () => {
     onSave(inputs);
   };
@@ -226,6 +277,7 @@ const CalculationsInput: React.FC<CalculationsInputProps> = ({ invoices, initial
             <table className="min-w-full divide-y divide-border">
               <thead className="bg-muted/50">
                 <tr>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider w-32">Incluir no Relatório</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Mês/Ano</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Receita Total</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Rec. Monofásica</th>
@@ -235,48 +287,77 @@ const CalculationsInput: React.FC<CalculationsInputProps> = ({ invoices, initial
                 </tr>
               </thead>
               <tbody className="bg-background divide-y divide-border">
-                {monthlyRevenues.map(({ month, total_revenue, monofasico_revenue }) => (
-                  <tr key={month} className="hover:bg-muted/20 transition-colors">
-                    <td className="px-4 py-3 whitespace-nowrap font-medium text-foreground">{month}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">{total_revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-primary font-semibold">{monofasico_revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <select
-                        value={inputs[month]?.anexo ?? ''}
-                        onChange={(e) => handleAnexoChange(month, e.target.value as AnexoType)}
-                        className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        <option value="" disabled>Selecione o Anexo</option>
-                        <option value="anexo1">Anexo I (Comércio)</option>
-                        <option value="anexo2">Anexo II (Indústria)</option>
-                        <option value="anexo3">Anexo III</option>
-                        <option value="anexo4">Anexo IV</option>
-                        <option value="anexo5">Anexo V</option>
-                      </select>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <Input
-                        type="number"
-                        placeholder="RBT12..."
-                        step="0.01"
-                        value={inputs[month]?.rbt12 ?? ''}
-                        onChange={(e) => handleInputChange(month, 'rbt12', e.target.value)}
-                        className="w-32"
-                        disabled={autoCalculateRbt12}
-                      />
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <Input
-                        type="number"
-                        placeholder="Valor Pago"
-                        step="0.01"
-                        value={inputs[month]?.das_paid ?? ''}
-                        onChange={(e) => handleInputChange(month, 'das_paid', e.target.value)}
-                        className="w-32"
-                      />
-                    </td>
-                  </tr>
-                ))}
+                {monthlyRevenues.map(({ month, total_revenue, monofasico_revenue }) => {
+                  const isComplete = isMonthDataComplete(month);
+                  const missingFields = getMissingFields(month);
+                  const isIncluded = inputs[month]?.includeInReport ?? true;
+
+                  return (
+                    <tr key={month} className={cn("hover:bg-muted/20 transition-colors", !isIncluded && "opacity-60")}>
+                      <td className="px-4 py-3 whitespace-nowrap text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={isIncluded}
+                            onChange={() => handleToggleIncludeInReport(month)}
+                            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                          />
+                          {!isComplete && (
+                            <div className="relative group">
+                              <AlertCircle className="h-4 w-4 text-amber-500" />
+                              <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block z-10 w-48 p-2 bg-gray-900 text-white text-xs rounded shadow-lg">
+                                <p className="font-semibold mb-1">Dados incompletos:</p>
+                                <ul className="list-disc list-inside">
+                                  {missingFields.map(field => (
+                                    <li key={field}>{field}</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap font-medium text-foreground">{month}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">{total_revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                      <td className="px-4 py-3 whitespace-nowrap text-primary font-semibold">{monofasico_revenue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <select
+                          value={inputs[month]?.anexo ?? ''}
+                          onChange={(e) => handleAnexoChange(month, e.target.value as AnexoType)}
+                          className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <option value="" disabled>Selecione o Anexo</option>
+                          <option value="anexo1">Anexo I (Comércio)</option>
+                          <option value="anexo2">Anexo II (Indústria)</option>
+                          <option value="anexo3">Anexo III</option>
+                          <option value="anexo4">Anexo IV</option>
+                          <option value="anexo5">Anexo V</option>
+                        </select>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <Input
+                          type="number"
+                          placeholder="RBT12..."
+                          step="0.01"
+                          value={inputs[month]?.rbt12 ?? ''}
+                          onChange={(e) => handleInputChange(month, 'rbt12', e.target.value)}
+                          className="w-32"
+                          disabled={autoCalculateRbt12}
+                        />
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <Input
+                          type="number"
+                          placeholder="Valor Pago"
+                          step="0.01"
+                          value={inputs[month]?.das_paid ?? ''}
+                          onChange={(e) => handleInputChange(month, 'das_paid', e.target.value)}
+                          className="w-32"
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
             {monthlyRevenues.length === 0 && (
