@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Upload, FileText, Calculator, Menu, LogOut, Building2 } from 'lucide-react';
+import { LayoutDashboard, Upload, FileText, Calculator, Menu, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '../utils/cn';
 
@@ -46,12 +46,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             >
                 <div className="h-full flex flex-col">
                     <div className="p-6 border-b">
-                        <div className="flex items-center gap-2 font-bold text-xl">
-                            <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground">
-                                <Building2 className="h-5 w-5" />
-                            </div>
-                            <span>Recupera<span className="text-primary">Tax</span></span>
-                        </div>
+                        <img
+                            src="/assets/logo.png"
+                            alt="RecuperaTax"
+                            className="h-40 w-auto"
+                        />
                     </div>
 
                     <div className="flex-1 py-6 px-3 space-y-1">

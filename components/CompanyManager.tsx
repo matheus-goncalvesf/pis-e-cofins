@@ -19,8 +19,6 @@ const CompanyManager: React.FC<CompanyManagerProps> = ({ companies, onSelectComp
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (newCompanyName && newCompanyCNPJ) {
-      // Actually, looking at the props: onCreateCompany: (company: Omit<Company, 'id' | 'created_at'>) => void;
-      // So we should NOT pass ID.
       onCreateCompany({
         name: newCompanyName,
         cnpj: newCompanyCNPJ,
@@ -33,104 +31,165 @@ const CompanyManager: React.FC<CompanyManagerProps> = ({ companies, onSelectComp
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
-      <Card className="w-full max-w-3xl shadow-lg">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl flex items-center gap-2">
-                <Building2 className="h-6 w-6 text-primary" />
-                Gerenciamento de Empresas
-              </CardTitle>
-              <CardDescription>Selecione uma empresa para iniciar ou cadastre uma nova.</CardDescription>
-            </div>
-            {!isAdding && (
-              <Button onClick={() => setIsAdding(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Nova Empresa
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isAdding ? (
-            <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg bg-secondary/20 animate-in fade-in slide-in-from-top-2">
-              <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <label htmlFor="name" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Nome da Empresa</label>
-                  <input
-                    id="name"
-                    type="text"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="Ex: Minha Loja LTDA"
-                    value={newCompanyName}
-                    onChange={(e) => setNewCompanyName(e.target.value)}
-                    required
-                    autoFocus
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <label htmlFor="cnpj" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">CNPJ</label>
-                  <input
-                    id="cnpj"
-                    type="text"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="00.000.000/0000-00"
-                    value={newCompanyCNPJ}
-                    onChange={(e) => setNewCompanyCNPJ(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end gap-2 mt-4">
-                <Button type="button" variant="ghost" onClick={() => setIsAdding(false)}>Cancelar</Button>
-                <Button type="submit">Cadastrar Empresa</Button>
-              </div>
-            </form>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              {companies.length === 0 ? (
-                <div className="col-span-2 text-center py-12 text-muted-foreground">
-                  Nenhuma empresa cadastrada. Clique em "Nova Empresa" para começar.
-                </div>
-              ) : (
-                companies.map((company) => (
-                  <div
-                    key={company.id}
-                    className="group flex flex-col justify-between rounded-lg border p-4 hover:bg-secondary/50 hover:border-primary/50 transition-all cursor-pointer relative"
-                    onClick={() => onSelectCompany(company.id)}
-                  >
-                    <div className="space-y-1">
-                      <h3 className="font-semibold leading-none tracking-tight text-lg group-hover:text-primary transition-colors">{company.name}</h3>
-                      <p className="text-sm text-muted-foreground">{company.cnpj}</p>
-                    </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-5xl">
+        {/* Logo and Branding */}
+        <div className="text-center mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
+          <img
+            src="/assets/logo.png"
+            alt="RecuperaTax"
+            className="h-48 mx-auto mb-4"
+          />
+          <p className="text-lg text-muted-foreground font-medium">
+            Recuperação de Créditos PIS/COFINS
+          </p>
+          <div className="mt-2 h-1 w-24 mx-auto bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full"></div>
+        </div>
 
-                    <div className="flex items-center justify-between mt-4">
-                      <span className="text-xs text-muted-foreground">Criada em {new Date(company.created_at).toLocaleDateString()}</span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive z-10"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (window.confirm('Tem certeza que deseja excluir esta empresa?')) {
-                            onDeleteCompany(company.id);
-                          }
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ArrowRight className="h-5 w-5 text-primary" />
-                    </div>
-                  </div>
-                ))
+        {/* Main Card */}
+        <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <CardHeader className="border-b bg-gradient-to-r from-blue-50/50 to-indigo-50/50">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-2xl flex items-center gap-2">
+                  <Building2 className="h-6 w-6 text-blue-600" />
+                  Gerenciamento de Empresas
+                </CardTitle>
+                <CardDescription className="mt-2">
+                  Selecione uma empresa para iniciar ou cadastre uma nova.
+                </CardDescription>
+              </div>
+              {!isAdding && (
+                <Button
+                  onClick={() => setIsAdding(true)}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nova Empresa
+                </Button>
               )}
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent className="p-6">
+            {isAdding ? (
+              <form onSubmit={handleSubmit} className="space-y-6 p-6 border-2 border-blue-100 rounded-xl bg-gradient-to-br from-blue-50/30 to-indigo-50/30 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="grid gap-6">
+                  <div className="grid gap-3">
+                    <label htmlFor="name" className="text-sm font-semibold text-gray-700">
+                      Nome da Empresa
+                    </label>
+                    <input
+                      id="name"
+                      type="text"
+                      className="flex h-11 w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-sm shadow-sm transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none"
+                      placeholder="Ex: Minha Loja LTDA"
+                      value={newCompanyName}
+                      onChange={(e) => setNewCompanyName(e.target.value)}
+                      required
+                      autoFocus
+                    />
+                  </div>
+                  <div className="grid gap-3">
+                    <label htmlFor="cnpj" className="text-sm font-semibold text-gray-700">
+                      CNPJ
+                    </label>
+                    <input
+                      id="cnpj"
+                      type="text"
+                      className="flex h-11 w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2 text-sm shadow-sm transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none"
+                      placeholder="00.000.000/0000-00"
+                      value={newCompanyCNPJ}
+                      onChange={(e) => setNewCompanyCNPJ(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end gap-3 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsAdding(false)}
+                    className="border-2"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md"
+                  >
+                    Cadastrar Empresa
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {companies.length === 0 ? (
+                  <div className="col-span-full text-center py-16">
+                    <Building2 className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+                    <p className="text-lg font-medium text-gray-500 mb-2">
+                      Nenhuma empresa cadastrada
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Clique em "Nova Empresa" para começar
+                    </p>
+                  </div>
+                ) : (
+                  companies.map((company) => (
+                    <div
+                      key={company.id}
+                      className="group relative flex flex-col justify-between rounded-xl border-2 border-gray-200 p-5 bg-white hover:border-blue-400 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer"
+                      onClick={() => onSelectCompany(company.id)}
+                    >
+                      <div className="space-y-3">
+                        <div className="flex items-start justify-between">
+                          <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md">
+                            <Building2 className="h-6 w-6 text-white" />
+                          </div>
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ArrowRight className="h-5 w-5 text-blue-600" />
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-lg leading-tight text-gray-900 group-hover:text-blue-700 transition-colors">
+                            {company.name}
+                          </h3>
+                          <p className="text-sm text-gray-600 mt-1 font-medium">
+                            {company.cnpj}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
+                        <span className="text-xs text-gray-500 font-medium">
+                          {new Date(company.created_at).toLocaleDateString('pt-BR')}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50 z-10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (window.confirm(`Tem certeza que deseja excluir "${company.name}"?`)) {
+                              onDeleteCompany(company.id);
+                            }
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Footer */}
+        <div className="text-center mt-6 text-sm text-gray-500 animate-in fade-in duration-1000">
+          <p>Sistema profissional de recuperação tributária</p>
+        </div>
+      </div>
     </div>
   );
 };
