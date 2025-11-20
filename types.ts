@@ -64,7 +64,7 @@ export interface CalculationResult {
 }
 
 export interface Company {
-  id: number;
+  id: string;
   name: string;
   cnpj: string;
   created_at: string;

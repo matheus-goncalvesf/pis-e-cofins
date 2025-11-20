@@ -10,7 +10,7 @@ interface CalculationsInputProps {
   invoices: Invoice[];
   initialData: Record<string, CalculationInput>;
   onSave: (inputs: Record<string, CalculationInput>) => void;
-  companyId: number;
+  companyId: string;
 }
 
 const CalculationsInput: React.FC<CalculationsInputProps> = ({ invoices, initialData, onSave, companyId }) => {

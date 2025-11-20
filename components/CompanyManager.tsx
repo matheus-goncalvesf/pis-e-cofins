@@ -6,9 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 
 interface CompanyManagerProps {
   companies: Company[];
-  onSelectCompany: (id: number) => void;
+  onSelectCompany: (id: string) => void;
   onCreateCompany: (company: Omit<Company, 'id' | 'created_at'>) => void;
-  onDeleteCompany: (id: number) => void;
+  onDeleteCompany: (id: string) => void;
 }
 
 const CompanyManager: React.FC<CompanyManagerProps> = ({ companies, onSelectCompany, onCreateCompany, onDeleteCompany }) => {

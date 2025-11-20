@@ -8,6 +8,7 @@ interface DashboardLayoutProps {
     activePage: string;
     onNavigate: (page: any) => void;
     onExitCompany: () => void;
+    onLogout: () => void;
     companyName?: string;
 }
 
@@ -31,7 +32,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     companyName,
     activePage,
     onNavigate,
-    onExitCompany
+    onExitCompany,
+    onLogout
 }) => {
     const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
 
@@ -95,16 +97,20 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                         </Button>
                     </div>
 
-                    <div className="mt-auto p-4 border-t border-border sticky bottom-0 bg-card">
+                    <div className="mt-auto p-4 border-t border-border sticky bottom-0 bg-card space-y-2">
                         {companyName && (
-                            <div className="mb-4 px-2">
+                            <div className="px-2">
                                 <p className="text-xs text-muted-foreground">Empresa Ativa</p>
                                 <p className="font-medium truncate">{companyName}</p>
                             </div>
                         )}
-                        <Button variant="outline" className="w-full justify-start gap-2 text-destructive hover:text-destructive" onClick={onExitCompany}>
+                        <Button variant="outline" className="w-full justify-start gap-2" onClick={onExitCompany}>
                             <LogOut className="h-4 w-4" />
-                            Sair da Empresa
+                            Trocar Empresa
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={onLogout}>
+                            <LogOut className="h-4 w-4" />
+                            Sair da Conta
                         </Button>
                     </div>
                 </div>

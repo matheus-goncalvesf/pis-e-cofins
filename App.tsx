@@ -9,20 +9,27 @@ import { DashboardLayout } from './components/Layout';
 import { UploadFile, Invoice, InvoiceItem, CalculationInput, Company, CompanyData, UploadStatus } from './types';
 import { parseNFeXML } from './utils/xmlParser';
 import { checkIsMonofasico } from './utils/ncmMatcher';
-import { db, CompanyEntity, InvoiceEntity, CalculationEntity } from './services/db';
+import { db, InvoiceEntity, CalculationEntity } from './services/db';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { useAuth } from './components/AuthProvider';
+import { Auth } from './components/Auth';
+import { supabase } from './services/supabase';
+import LandingPage from './components/LandingPage';
 
 type Page = 'dashboard' | 'upload' | 'review' | 'calculations' | 'reports';
 
 const App: React.FC = () => {
-  const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(() => {
-    const saved = localStorage.getItem('selectedCompanyId');
-    return saved ? parseInt(saved, 10) : null;
+  const { user, loading, signOut } = useAuth();
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [showAuth, setShowAuth] = useState<'login' | 'signup' | null>(null);
+
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(() => {
+    return localStorage.getItem('selectedCompanyId');
   });
 
   useEffect(() => {
     if (selectedCompanyId) {
-      localStorage.setItem('selectedCompanyId', selectedCompanyId.toString());
+      localStorage.setItem('selectedCompanyId', selectedCompanyId);
     } else {
       localStorage.removeItem('selectedCompanyId');
     }
@@ -30,14 +37,23 @@ const App: React.FC = () => {
 
   const [currentView, setCurrentView] = useState<Page>('dashboard');
 
-  // Fetch companies from IndexedDB
-  const companies = useLiveQuery(() => db.companies.toArray(), []);
+  // Fetch companies from Supabase
+  useEffect(() => {
+    if (user) {
+      supabase.from('companies').select('*').order('created_at', { ascending: false })
+        .then(({ data, error }) => {
+          if (error) console.error('Error fetching companies:', error);
+          else setCompanies(data || []);
+        });
+    }
+  }, [user]);
 
   // Fetch active company data
   const activeCompanyData = useLiveQuery(async () => {
     if (!selectedCompanyId) return null;
 
-    const company = await db.companies.get(selectedCompanyId);
+    // Get company from local state (Supabase cache)
+    const company = companies.find(c => c.id === selectedCompanyId);
     if (!company) return null;
 
     const invoices = await db.invoices.where('companyId').equals(selectedCompanyId).toArray();
@@ -74,43 +90,57 @@ const App: React.FC = () => {
     }));
 
     return {
-      company: { ...company, created_at: company.created_at || new Date().toISOString() } as Company,
+      company: { ...company },
       invoices: parsedInvoices,
       uploadedFiles: uploadFiles,
       calculation_inputs: calculationInputs
     } as CompanyData;
 
-  }, [selectedCompanyId]);
+  }, [selectedCompanyId, companies]);
 
 
-  const handleAddCompany = async (company: Omit<Company, 'id' | 'created_at'>) => {
+  const handleAddCompany = async (companyData: Omit<Company, 'id' | 'created_at'>) => {
     try {
-      console.log('handleAddCompany called with:', company);
-      const newCompany: CompanyEntity = {
-        ...company,
-        created_at: new Date().toISOString()
-      };
-      console.log('About to add company to DB:', newCompany);
-      const id = await db.companies.add(newCompany);
-      console.log('Company added with ID:', id);
-      setSelectedCompanyId(id as number);
+      if (!user) return;
+
+      const { data, error } = await supabase.from('companies').insert([{
+        name: companyData.name,
+        cnpj: companyData.cnpj,
+        user_id: user.id
+      }]).select().single();
+
+      if (error) throw error;
+
+      setCompanies([data, ...companies]);
+      setSelectedCompanyId(data.id);
       setCurrentView('dashboard');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding company:', error);
-      alert(`Erro ao criar empresa: ${error}`);
+      alert(`Erro ao criar empresa: ${error.message}`);
     }
   };
 
-  const handleDeleteCompany = async (id: number) => {
+  const handleDeleteCompany = async (id: string) => {
     if (confirm('Tem certeza que deseja excluir esta empresa e TODOS os seus dados?')) {
-      await db.transaction('rw', db.companies, db.invoices, db.files, db.calculations, async () => {
-        await db.companies.delete(id);
-        await db.invoices.where('companyId').equals(id).delete();
-        await db.files.where('companyId').equals(id).delete();
-        await db.calculations.where('companyId').equals(id).delete();
-      });
-      if (selectedCompanyId === id) {
-        setSelectedCompanyId(null);
+      try {
+        // Delete from Supabase
+        const { error } = await supabase.from('companies').delete().eq('id', id);
+        if (error) throw error;
+
+        // Delete local data
+        await db.transaction('rw', db.invoices, db.files, db.calculations, async () => {
+          await db.invoices.where('companyId').equals(id).delete();
+          await db.files.where('companyId').equals(id).delete();
+          await db.calculations.where('companyId').equals(id).delete();
+        });
+
+        setCompanies(companies.filter(c => c.id !== id));
+        if (selectedCompanyId === id) {
+          setSelectedCompanyId(null);
+        }
+      } catch (error: any) {
+        console.error('Error deleting company:', error);
+        alert(`Erro ao excluir empresa: ${error.message}`);
       }
     }
   };
@@ -221,11 +251,32 @@ const App: React.FC = () => {
   };
 
 
+  // First, check if auth is loading
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
+  }
+
+  // Then, check if user is logged in
+  if (!user) {
+    // If showing auth screen (login or signup)
+    if (showAuth) {
+      return <Auth />;
+    }
+    // Otherwise show landing page
+    return (
+      <LandingPage
+        onLogin={() => setShowAuth('login')}
+        onSignup={() => setShowAuth('signup')}
+      />
+    );
+  }
+
+  // If logged in but no company selected, show company manager
   if (!selectedCompanyId) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <CompanyManager
-          companies={(companies || []).map(c => ({ ...c, id: c.id!, created_at: c.created_at || new Date().toISOString() }))}
+          companies={companies}
           onSelectCompany={(id) => {
             setSelectedCompanyId(id);
             setCurrentView('dashboard');
@@ -237,6 +288,7 @@ const App: React.FC = () => {
     );
   }
 
+  // Finally, check if company data is loaded
   if (!activeCompanyData) {
     return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
   }
@@ -246,6 +298,11 @@ const App: React.FC = () => {
       activePage={currentView}
       onNavigate={(view) => setCurrentView(view as Page)}
       onExitCompany={() => setSelectedCompanyId(null)}
+      onLogout={async () => {
+        await signOut();
+        setSelectedCompanyId(null);
+        setShowAuth(null);
+      }}
       companyName={activeCompanyData.company.name}
     >
       {currentView === 'dashboard' && (
