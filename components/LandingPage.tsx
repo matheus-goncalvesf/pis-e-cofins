@@ -34,7 +34,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, onSignup }) => {
                 <div
                     className="absolute top-0 right-0 h-[672px] opacity-90"
                     style={{
-                        backgroundImage: 'url(/assets/banner_landing_page.png)',
+                        backgroundImage: 'url(/assets/banner_landing_page.webp)',
                         backgroundSize: 'contain',
                         backgroundRepeat: 'no-repeat',
                         backgroundPosition: 'right top',
