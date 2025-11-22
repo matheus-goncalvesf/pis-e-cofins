@@ -31,6 +31,11 @@ export interface InvoiceItem {
   needs_human_review: boolean;
   manual_override?: boolean;
   human_reviewed?: boolean;
+
+  // Validação de CFOP para crédito
+  cfop_valid_for_credit?: boolean;        // Se o CFOP permite crédito
+  cfop_validation_message?: string;       // Mensagem explicativa sobre o CFOP
+  credit_blocked_reason?: string;         // Razão pela qual o crédito foi bloqueado (se aplicável)
 }
 
 export interface Invoice {

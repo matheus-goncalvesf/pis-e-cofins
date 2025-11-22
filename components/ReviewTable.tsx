@@ -158,13 +158,21 @@ const ReviewTable: React.FC<ReviewTableProps> = ({ invoices, onSave }) => {
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right mr-4">
-                    <p className="text-sm font-medium text-foreground">
-                      {invoice.items.filter(i => i.is_monofasico).length} Monofásicos
+                    <p className="text-sm font-bold text-green-600">
+                      {/* Conta produtos com NCM monofásico (classification_confidence), não crédito final */}
+                      {invoice.items.filter(i => i.classification_confidence > 0.5).length} Monofásicos
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {invoice.items.filter(i => !i.human_reviewed).length} Pendentes de Revisão
                     </p>
                   </div>
+                  {/* Warning aparece APENAS quando há NCM monofásico + CFOP inválido (credit_blocked_reason existe) */}
+                  {invoice.items.some(i => i.credit_blocked_reason) && (
+                    <div className="flex items-center gap-1 px-3 py-1 bg-amber-100 border border-amber-300 rounded-md">
+                      <span className="text-amber-600 font-bold text-sm">⚠️</span>
+                      <span className="text-xs font-medium text-amber-800">CFOP Requer Atenção</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -176,6 +184,7 @@ const ReviewTable: React.FC<ReviewTableProps> = ({ invoices, onSave }) => {
                         <tr>
                           <th className="px-4 py-3 font-medium">Produto</th>
                           <th className="px-4 py-3 font-medium">NCM</th>
+                          <th className="px-4 py-3 font-medium">CFOP</th>
                           <th className="px-4 py-3 font-medium">Valor</th>
                           <th className="px-4 py-3 font-medium text-center">Classificação (Clique para alterar)</th>
                           <th className="px-4 py-3 font-medium text-center">Revisão Humana</th>
@@ -183,57 +192,99 @@ const ReviewTable: React.FC<ReviewTableProps> = ({ invoices, onSave }) => {
                       </thead>
                       <tbody className="divide-y divide-border">
                         {invoice.items.map(item => (
-                          <tr key={item.id} className={cn(
-                            "hover:bg-muted/20 transition-colors",
-                            item.manual_override && "bg-blue-50/50"
-                          )}>
-                            <td className="px-4 py-3 font-medium text-foreground max-w-[300px] truncate" title={item.description}>
-                              {item.description}
-                            </td>
-                            <td className="px-4 py-3 text-muted-foreground">{item.ncm_code}</td>
-                            <td className="px-4 py-3 text-foreground">
-                              {item.total_value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              <div className="flex items-center justify-center gap-2">
-                                <input
-                                  type="checkbox"
-                                  checked={item.is_monofasico}
-                                  onChange={(e) => {
-                                    e.stopPropagation();
-                                    toggleItemStatus(invoice.id, item.id);
-                                  }}
-                                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
-                                />
+                          <React.Fragment key={item.id}>
+                            <tr className={cn(
+                              "hover:bg-muted/20 transition-colors",
+                              item.manual_override && "bg-blue-50/50",
+                              item.credit_blocked_reason && "bg-amber-50/30"
+                            )}>
+                              <td className="px-4 py-3 font-medium text-foreground max-w-[300px] truncate" title={item.description}>
+                                {item.description}
+                              </td>
+                              <td className="px-4 py-3">
+                                {/* NCM em verde se monofásico, vermelho se não monofásico */}
                                 <span className={cn(
-                                  "text-xs font-medium",
-                                  item.is_monofasico ? "text-green-600" : "text-gray-500"
-                                )}>
-                                  {item.is_monofasico ? "Monofásico" : "Tributado"}
+                                  "font-medium",
+                                  item.classification_confidence > 0.5
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                                )} title={item.classification_rule}>
+                                  {item.ncm_code}
+                                  {item.classification_confidence > 0.5 && " ✓"}
+                                  {item.classification_confidence <= 0.5 && " ✗"}
                                 </span>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3 text-center">
-                              {item.human_reviewed ? (
-                                <div className="flex items-center justify-center text-green-600 gap-1">
-                                  <CheckCircle2 className="h-4 w-4" />
-                                  <span className="text-xs font-medium">Verificado</span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="flex flex-col gap-1">
+                                  <span className={cn(
+                                    "text-sm font-medium",
+                                    item.cfop_valid_for_credit ? "text-green-600" : "text-red-600"
+                                  )}>
+                                    {item.cfop || 'N/A'}
+                                  </span>
+                                  {!item.cfop_valid_for_credit && item.cfop_validation_message && (
+                                    <span className="text-xs text-red-600 font-medium" title={item.cfop_validation_message}>
+                                      ⚠️ {item.cfop_validation_message.length > 40
+                                        ? item.cfop_validation_message.substring(0, 40) + '...'
+                                        : item.cfop_validation_message}
+                                    </span>
+                                  )}
                                 </div>
-                              ) : (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-7 text-xs border-dashed border-primary/50 text-primary hover:bg-primary/10"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    confirmItemReview(invoice.id, item.id);
-                                  }}
-                                >
-                                  Confirmar
-                                </Button>
-                              )}
-                            </td>
-                          </tr>
+                              </td>
+                              <td className="px-4 py-3 text-foreground">
+                                {item.total_value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                              </td>
+                              <td className="px-4 py-3 text-center">
+                                <div className="flex items-center justify-center gap-2">
+                                  <input
+                                    type="checkbox"
+                                    checked={item.is_monofasico}
+                                    onChange={(e) => {
+                                      e.stopPropagation();
+                                      toggleItemStatus(invoice.id, item.id);
+                                    }}
+                                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                                  />
+                                  <span className={cn(
+                                    "text-xs font-medium",
+                                    item.is_monofasico ? "text-green-600" : "text-gray-500"
+                                  )}>
+                                    {item.is_monofasico ? "Monofásico" : "Tributado"}
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3 text-center">
+                                {item.human_reviewed ? (
+                                  <div className="flex items-center justify-center text-green-600 gap-1">
+                                    <CheckCircle2 className="h-4 w-4" />
+                                    <span className="text-xs font-medium">Verificado</span>
+                                  </div>
+                                ) : (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-7 text-xs border-dashed border-primary/50 text-primary hover:bg-primary/10"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      confirmItemReview(invoice.id, item.id);
+                                    }}
+                                  >
+                                    Confirmar
+                                  </Button>
+                                )}
+                              </td>
+                            </tr>
+                            {item.credit_blocked_reason && (
+                              <tr className="bg-amber-50 border-l-4 border-amber-400">
+                                <td colSpan={6} className="px-4 py-3">
+                                  <div className="flex items-start gap-2 text-sm text-amber-900">
+                                    <span className="font-bold text-amber-600">⚠️ ATENÇÃO:</span>
+                                    <span>{item.credit_blocked_reason}</span>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </React.Fragment>
                         ))}
                       </tbody>
                     </table>

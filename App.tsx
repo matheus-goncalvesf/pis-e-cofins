@@ -8,7 +8,6 @@ import Dashboard from './components/Dashboard';
 import { DashboardLayout } from './components/Layout';
 import { UploadFile, Invoice, InvoiceItem, CalculationInput, Company, CompanyData, UploadStatus } from './types';
 import { parseNFeXML } from './utils/xmlParser';
-import { checkIsMonofasico } from './utils/ncmMatcher';
 import { db, InvoiceEntity, CalculationEntity } from './services/db';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useAuth } from './components/AuthProvider';
@@ -172,16 +171,12 @@ const App: React.FC = () => {
       try {
         const invoice = parseNFeXML(file.content, file.name);
         if (invoice) {
-          // Classify items
-          invoice.items = invoice.items.map(item => {
-            const { isMonofasico, ruleDescription } = checkIsMonofasico(item.ncm_code);
-            return {
-              ...item,
-              is_monofasico: isMonofasico,
-              classification_rule: ruleDescription,
-              needs_human_review: ruleDescription.includes('Divergência') || ruleDescription.includes('Verificar')
-            };
-          });
+          // IMPORTANTE: O parseNFeXML já classifica os items considerando NCM + CFOP
+          // NÃO devemos reclassificar aqui, pois sobrescreveríamos a lógica correta!
+          // A classificação já vem pronta com:
+          // - is_monofasico: true somente se NCM monofásico E CFOP válido
+          // - needs_human_review: true se NCM monofásico mas CFOP inválido
+          // - credit_blocked_reason: mensagem explicativa quando aplicável
 
           // Add companyId and prepare for DB
           const invoiceEntity: InvoiceEntity = {
