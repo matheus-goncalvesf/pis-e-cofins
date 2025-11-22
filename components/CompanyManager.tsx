@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Company } from '../types';
-import { Building2, Plus, ArrowRight, Trash2 } from 'lucide-react';
+import { Building2, Plus, ArrowRight, Trash2, LogOut } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 
@@ -9,9 +9,10 @@ interface CompanyManagerProps {
   onSelectCompany: (id: string) => void;
   onCreateCompany: (company: Omit<Company, 'id' | 'created_at'>) => void;
   onDeleteCompany: (id: string) => void;
+  onLogout: () => void;
 }
 
-const CompanyManager: React.FC<CompanyManagerProps> = ({ companies, onSelectCompany, onCreateCompany, onDeleteCompany }) => {
+const CompanyManager: React.FC<CompanyManagerProps> = ({ companies, onSelectCompany, onCreateCompany, onDeleteCompany, onLogout }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [newCompanyName, setNewCompanyName] = useState('');
   const [newCompanyCNPJ, setNewCompanyCNPJ] = useState('');
@@ -59,15 +60,29 @@ const CompanyManager: React.FC<CompanyManagerProps> = ({ companies, onSelectComp
                   Selecione uma empresa para iniciar ou cadastre uma nova.
                 </CardDescription>
               </div>
-              {!isAdding && (
+              <div className="flex gap-2">
+                {!isAdding && (
+                  <Button
+                    onClick={() => setIsAdding(true)}
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Nova Empresa
+                  </Button>
+                )}
                 <Button
-                  onClick={() => setIsAdding(true)}
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md"
+                  variant="outline"
+                  onClick={() => {
+                    if (confirm('Tem certeza que deseja fazer logout?')) {
+                      onLogout();
+                    }
+                  }}
+                  className="border-2"
                 >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Nova Empresa
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sair
                 </Button>
-              )}
+              </div>
             </div>
           </CardHeader>
           <CardContent className="p-6">

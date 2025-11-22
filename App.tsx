@@ -12,6 +12,8 @@ import { db, InvoiceEntity, CalculationEntity } from './services/db';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useAuth } from './components/AuthProvider';
 import { Auth } from './components/Auth';
+import { ForgotPassword } from './components/ForgotPassword';
+import { ResetPassword } from './components/ResetPassword';
 import { supabase } from './services/supabase';
 import LandingPage from './components/LandingPage';
 
@@ -20,7 +22,7 @@ type Page = 'dashboard' | 'upload' | 'review' | 'calculations' | 'reports';
 const App: React.FC = () => {
   const { user, loading, signOut } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
-  const [showAuth, setShowAuth] = useState<'login' | 'signup' | null>(null);
+  const [showAuth, setShowAuth] = useState<'login' | 'signup' | 'forgot-password' | 'reset-password' | null>(null);
 
   const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(() => {
     return localStorage.getItem('selectedCompanyId');
@@ -46,6 +48,30 @@ const App: React.FC = () => {
         });
     }
   }, [user]);
+
+  // Check for password reset URL (hash contains access_token)
+  useEffect(() => {
+    const checkHash = () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      if (hashParams.get('type') === 'recovery') {
+        setShowAuth('reset-password');
+      }
+    };
+
+    checkHash(); // Check on mount
+    window.addEventListener('hashchange', checkHash); // Check on hash change
+    return () => window.removeEventListener('hashchange', checkHash);
+  }, []);
+
+  // Listen for forgot password event from Auth component
+  useEffect(() => {
+    const handleForgotPassword = () => {
+      setShowAuth('forgot-password');
+    };
+
+    window.addEventListener('showForgotPassword', handleForgotPassword);
+    return () => window.removeEventListener('showForgotPassword', handleForgotPassword);
+  }, []);
 
   // Fetch active company data
   const activeCompanyData = useLiveQuery(async () => {
@@ -251,11 +277,34 @@ const App: React.FC = () => {
     return <div className="min-h-screen flex items-center justify-center">Carregando...</div>;
   }
 
+  // Check for password reset BEFORE checking user auth
+  // (Supabase auto-authenticates on recovery link, but we still need to show reset form)
+  if (showAuth === 'reset-password') {
+    return (
+      <ResetPassword
+        onSuccess={() => {
+          setShowAuth(null);
+          // Clear the hash from URL
+          window.location.hash = '';
+        }}
+      />
+    );
+  }
+
   // Then, check if user is logged in
   if (!user) {
+    // Handle forgot password flow
+    if (showAuth === 'forgot-password') {
+      return (
+        <ForgotPassword
+          onBackToLogin={() => setShowAuth('login')}
+        />
+      );
+    }
+
     // If showing auth screen (login or signup)
     if (showAuth) {
-      return <Auth />;
+      return <Auth onBackToLanding={() => setShowAuth(null)} />;
     }
     // Otherwise show landing page
     return (
@@ -278,6 +327,10 @@ const App: React.FC = () => {
           }}
           onCreateCompany={handleAddCompany}
           onDeleteCompany={handleDeleteCompany}
+          onLogout={async () => {
+            await signOut();
+            setShowAuth(null);
+          }}
         />
       </div>
     );
