@@ -24,21 +24,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Get initial session
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-            setUser(session?.user ?? null);
+        console.log("AuthProvider: Initializing auth..."); // DEBUG
+
+        // Set a timeout to prevent infinite loading
+        const timeout = setTimeout(() => {
+            console.warn("AuthProvider: Session check timed out, setting loading to false");
             setLoading(false);
-        });
+        }, 5000); // 5 segundos
+
+        // Get initial session
+        supabase.auth.getSession()
+            .then(({ data: { session }, error }) => {
+                console.log("AuthProvider: Got session", { session, error }); // DEBUG
+                if (error) {
+                    console.error("AuthProvider: Error getting session:", error);
+                }
+                setSession(session);
+                setUser(session?.user ?? null);
+                setLoading(false);
+                clearTimeout(timeout);
+            })
+            .catch((error) => {
+                console.error("AuthProvider: Fatal error getting session:", error);
+                setLoading(false);
+                clearTimeout(timeout);
+            });
 
         // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            console.log("AuthProvider: Auth state changed", { _event, session }); // DEBUG
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
         });
 
-        return () => subscription.unsubscribe();
+        return () => {
+            clearTimeout(timeout);
+            subscription.unsubscribe();
+        };
     }, []);
 
     const signOut = async () => {

@@ -75,52 +75,63 @@ const App: React.FC = () => {
 
   // Fetch active company data
   const activeCompanyData = useLiveQuery(async () => {
-    if (!selectedCompanyId) return null;
+    try {
+      if (!selectedCompanyId) return null;
 
-    // Get company from local state (Supabase cache)
-    const company = companies.find(c => c.id === selectedCompanyId);
-    if (!company) return null;
+      // Get company from local state (Supabase cache)
+      const company = companies.find(c => c.id === selectedCompanyId);
+      if (!company) return null;
 
-    const invoices = await db.invoices.where('companyId').equals(selectedCompanyId).toArray();
-    const files = await db.files.where('companyId').equals(selectedCompanyId).toArray();
-    const calculations = await db.calculations.where('companyId').equals(selectedCompanyId).toArray();
+      const invoices = await db.invoices.where('companyId').equals(selectedCompanyId).toArray();
+      const files = await db.files.where('companyId').equals(selectedCompanyId).toArray();
+      const calculations = await db.calculations.where('companyId').equals(selectedCompanyId).toArray();
 
-    // Transform calculations array to record
-    const calculationInputs: Record<string, CalculationInput> = {};
-    calculations.forEach(c => {
-      calculationInputs[c.competence_month] = {
-        rbt12: c.rbt12,
-        das_paid: c.das_paid,
-        anexo: c.anexo,
-        includeInReport: c.includeInReport
-      };
-    });
+      // Transform calculations array to record
+      const calculationInputs: Record<string, CalculationInput> = {};
+      calculations.forEach(c => {
+        const input: CalculationInput = {
+          rbt12: c.rbt12,
+          das_paid: c.das_paid,
+          anexo: c.anexo,
+          includeInReport: c.includeInReport
+        };
 
-    // Transform files to UploadFile
-    const uploadFiles: UploadFile[] = files.map(f => ({
-      id: f.id!,
-      name: f.name,
-      content: f.content,
-      status: f.status as UploadStatus,
-      uploadDate: f.uploadDate || new Date().toISOString(),
-      type: 'XML',
-      progress: 100,
-      size: f.content.length
-    }));
+        // Defensive check: Only include if it exists
+        if (c.manual_effective_aliquot !== undefined && c.manual_effective_aliquot !== null) {
+          input.manual_effective_aliquot = c.manual_effective_aliquot;
+        }
 
-    // Transform invoices to Invoice
-    const parsedInvoices: Invoice[] = invoices.map(inv => ({
-      ...inv,
-      items: inv.items as InvoiceItem[]
-    }));
+        calculationInputs[c.competence_month] = input;
+      });
 
-    return {
-      company: { ...company },
-      invoices: parsedInvoices,
-      uploadedFiles: uploadFiles,
-      calculation_inputs: calculationInputs
-    } as CompanyData;
+      // Transform files to UploadFile
+      const uploadFiles: UploadFile[] = files.map(f => ({
+        id: f.id!,
+        name: f.name,
+        content: f.content,
+        status: f.status as UploadStatus,
+        uploadDate: f.uploadDate || new Date().toISOString(),
+        type: 'XML',
+        progress: 100,
+        size: f.content.length
+      }));
 
+      // Transform invoices to Invoice
+      const parsedInvoices: Invoice[] = invoices.map(inv => ({
+        ...inv,
+        items: inv.items as InvoiceItem[]
+      }));
+
+      return {
+        company: { ...company },
+        invoices: parsedInvoices,
+        uploadedFiles: uploadFiles,
+        calculation_inputs: calculationInputs
+      } as CompanyData;
+    } catch (error) {
+      console.error("Error in useLiveQuery:", error);
+      return null;
+    }
   }, [selectedCompanyId, companies]);
 
 

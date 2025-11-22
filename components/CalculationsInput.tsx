@@ -107,7 +107,7 @@ const CalculationsInput: React.FC<CalculationsInputProps> = ({ invoices, initial
   }, [autoCalculateRbt12, isNewCompany, monthlyRevenues]);
 
 
-  const handleInputChange = (month: string, field: 'das_paid' | 'rbt12', value: string) => {
+  const handleInputChange = (month: string, field: 'das_paid' | 'rbt12' | 'manual_effective_aliquot', value: string) => {
     const numericValue = parseFloat(value);
     if (isNaN(numericValue) && value !== '') return;
 
@@ -275,6 +275,7 @@ const CalculationsInput: React.FC<CalculationsInputProps> = ({ invoices, initial
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-48">Anexo Selecionado</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">RBT12 (R$)</th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">DAS Pago (R$)</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-40">Alíquota Efetiva (%)</th>
                 </tr>
               </thead>
               <tbody className="bg-background divide-y divide-border">
@@ -345,6 +346,25 @@ const CalculationsInput: React.FC<CalculationsInputProps> = ({ invoices, initial
                           onChange={(e) => handleInputChange(month, 'das_paid', e.target.value)}
                           className="w-32"
                         />
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="relative group">
+                          <Input
+                            type="number"
+                            placeholder="Opcional"
+                            step="0.01"
+                            min="0"
+                            max="100"
+                            value={inputs[month]?.manual_effective_aliquot ?? ''}
+                            onChange={(e) => handleInputChange(month, 'manual_effective_aliquot', e.target.value)}
+                            className="w-32"
+                          />
+                          <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block z-10 w-64 p-3 bg-gray-900 text-white text-xs rounded shadow-lg">
+                            <p className="font-semibold mb-1">💡 Alíquota Efetiva Manual</p>
+                            <p className="mb-2">Use este campo se sua alíquota real for diferente do calculado automaticamente (DAS/Faturamento).</p>
+                            <p className="text-amber-200">Deixe vazio para cálculo automático.</p>
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   );

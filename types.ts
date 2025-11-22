@@ -52,6 +52,7 @@ export interface CalculationInput {
   das_paid?: number;
   anexo?: AnexoType;
   rbt12?: number; // Receita Bruta Total dos últimos 12 meses
+  manual_effective_aliquot?: number; // Alíquota efetiva informada manualmente (0-100)
   includeInReport?: boolean; // Flag to include/exclude month from reports
 }
 

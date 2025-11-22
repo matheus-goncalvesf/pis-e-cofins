@@ -45,6 +45,7 @@ export function useCalculations(invoices: Invoice[], calculationInputs: Record<s
         const dasPaid = userInput?.das_paid ?? 0;
         const anexo = userInput?.anexo;
         const rbt12 = userInput?.rbt12 ?? 0;
+        const manualAliquot = userInput?.manual_effective_aliquot; // em porcentagem (0-100)
 
         const baseResult = {
           competence_month: month,
@@ -70,9 +71,18 @@ export function useCalculations(invoices: Invoice[], calculationInputs: Record<s
           return baseResult;
         }
 
-        // 2. Calcular a Alíquota Efetiva REAL (Baseada no pagamento realizado)
-        // Fórmula: DAS Pago / Faturamento Total do Mês
-        const realEffectiveAliquot = dasPaid / data.total_revenue;
+        // 2. Calcular a Alíquota Efetiva
+        // Se o usuário forneceu uma alíquota manual, usa ela
+        // Caso contrário, calcula baseado no DAS pago / Faturamento 
+        let realEffectiveAliquot: number;
+
+        if (manualAliquot !== undefined && manualAliquot > 0) {
+          // Converte de porcentagem para decimal (ex: 5% -> 0.05)
+          realEffectiveAliquot = manualAliquot / 100;
+        } else {
+          // Cálculo automático: DAS Pago / Faturamento Total do Mês
+          realEffectiveAliquot = dasPaid / data.total_revenue;
+        }
 
         // 3. Identificar a porcentagem de repartição (Partilha) para PIS e COFINS na faixa específica
         // Proteção extra contra chaves indefinidas
